@@ -31,188 +31,463 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta name="description" content="コミックマーケットのサークル参加・申込締切メモ。締切カウントダウンと当落後・当日のチェックリスト。">
-<meta property="og:title" content="コミケ サークル参加メモ">
-<meta property="og:description" content="コミックマーケットのサークル参加・申込締切メモ。締切カウントダウンと当落後・当日のチェックリスト。">
+<meta name="description" content="コミケ参加・手続き進行表。申込から当日までの締切カウントダウンと、当落後・当日のチェックリスト。">
+<meta property="og:title" content="Circle Ops Tracker">
+<meta property="og:description" content="コミケ参加・手続き進行表。申込から当日までの締切カウントダウンと、当落後・当日のチェックリスト。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ad-motsu.github.io/comiket/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>コミケ サークル参加メモ</title>
+<title>Circle Ops Tracker | コミケ参加・手続き進行表</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Oswald:wght@300;400;600&family=Shippori+Mincho+B1:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+/* 2色刷りの印刷物という表現のためダークモードは実装せず、単一の配色に固定する */
 :root{
-  --ink:#1a1a5c; --paper:#eceaf3; --card:#f8f7fc; --rule:#c2c1eb;
-  --muted:#45447f; --stamp:#d10000; --indigo:#3d3c8f; --seal:#000066;
+  --paper:#f6eef1;   /* 地。ピンクを極薄で敷いた紙 */
+  --card:#fdfbfc;    /* 白場 */
+  --ink:#000066;     /* 一色目・藍。本文と枠。paper上 15.45:1 / pink面上 10.07:1 */
+  --muted:#45447f;   /* 補助文字。paper上 7.72:1 / pink面上 5.03:1 */
+  --pink:#efb4c5;    /* 二色目。面と罫だけに使う。文字色にしない(1.47:1) */
+  --hot:#b02348;     /* 緊急のみ。藍とピンクの重ね刷り相当の濃度。paper上 5.79:1 */
+  --knock:#ffffff;   /* 藍の面への白抜き。藍面上 17.62:1 */
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);
+  font-family:"Noto Sans JP",system-ui,sans-serif;
+  color:var(--ink);
   background-color:var(--paper);
-  background-image:
-    /* deslop-ignore-next-line 06: 原稿用紙の升目。同人誌の文脈を示す意図的な選択 */
-    repeating-linear-gradient(0deg,rgba(26,26,92,.045) 0 1px,transparent 1px 34px),
-    /* deslop-ignore-next-line 06: 原稿用紙の升目。同人誌の文脈を示す意図的な選択 */
-    repeating-linear-gradient(90deg,rgba(26,26,92,.045) 0 1px,transparent 1px 34px);
-  line-height:1.75;font-size:15px;padding:0 18px 80px;
+  line-height:1.75;
+  font-size:15px;
+  padding:0 18px 80px;
 }
 .wrap{max-width:760px;margin:0 auto}
-a{color:var(--indigo);text-decoration:none;border-bottom:1px solid rgba(61,60,143,.35)}
-a:hover{border-bottom-color:var(--indigo)}
-a:focus-visible,button:focus-visible{outline:2px solid var(--stamp);outline-offset:3px}
+a{
+  color:var(--ink);
+  text-decoration:none;
+  border-bottom:1px solid var(--pink);
+}
+a:hover{border-bottom-color:var(--ink)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--hot);outline-offset:3px}
 
-.stale{background:var(--stamp);color:#fff;font-size:13px;font-weight:500;
-  padding:10px 16px;margin:0 -18px;text-align:center}
+.stale{
+  background:var(--hot);
+  color:var(--knock);
+  font-size:13px;
+  font-weight:500;
+  padding:10px 16px;
+  margin:0 -18px;
+  text-align:center;
+}
 
-.disclaimer{border:1px solid var(--stamp);background:rgba(209,0,0,.05);
-  padding:11px 14px;margin-top:20px;font-size:12.5px;line-height:1.65;color:var(--stamp)}
+.disclaimer{
+  border:1px solid var(--hot);
+  background:var(--card);
+  padding:12px 16px;
+  margin-top:24px;
+  font-size:12.5px;
+  line-height:1.65;
+  color:var(--hot);
+}
 .disclaimer b{font-weight:700}
+.disclaimer a{color:var(--hot);border-bottom-color:var(--hot)}
 
-header{padding:40px 0 26px}
-h1{font-family:"Shippori Mincho B1",serif;font-weight:600;
-  font-size:clamp(26px,6vw,36px);line-height:1.25;margin:8px 0 4px}
+header{padding:40px 0 28px}
+h1{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  font-size:clamp(28px,6vw,40px);
+  line-height:1.2;
+  margin:8px 0 4px;
+  color:var(--ink);
+}
+.subtitle-main{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:700;
+  font-size:15px;
+  color:var(--ink);
+  margin-bottom:8px;
+}
 .subtitle{font-size:13.5px;color:var(--muted)}
 .meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-size:12px;color:var(--muted)}
 .meta b{font-weight:500;color:var(--ink)}
 
-.tabs{display:flex;border-bottom:2px solid var(--ink);margin-top:30px;align-items:stretch}
-.tab{font-family:"Noto Sans JP",sans-serif;font-size:14.5px;font-weight:500;
-  background:none;cursor:pointer;color:var(--muted);padding:13px 22px;
-  position:relative;top:2px;line-height:1.4;
-  border:1px solid transparent;border-bottom:none;
-  display:inline-flex;align-items:center;justify-content:center}
-.tab[aria-selected="true"]{color:var(--ink);font-weight:700;background:var(--card);
-  border-color:var(--ink);border-bottom:2px solid var(--card)}
+.tabs{display:flex;border-bottom:2px solid var(--ink);margin-top:32px;align-items:stretch}
+.tab{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:14.5px;
+  font-weight:500;
+  background:none;
+  cursor:pointer;
+  color:var(--muted);
+  padding:13px 22px;
+  position:relative;
+  top:2px;
+  line-height:1.4;
+  border:1px solid transparent;
+  border-bottom:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--card)}
+.tab[aria-selected="true"]{
+  color:var(--ink);
+  font-weight:700;
+  background:var(--pink);
+  border-color:var(--ink);
+  border-bottom:2px solid var(--pink);
+}
 .tab-text-short{display:none}
 .panel[hidden]{display:none}
 
 .toc{margin-top:24px;scroll-margin-top:16px}
-.toc-list{list-style:none;border-top:1px solid var(--rule)}
-.toc-list li{border-bottom:1px solid var(--rule);font-size:14.5px}
-.toc-list a{display:block;padding:10px 0;font-weight:500}
+.toc-list{list-style:none;border-top:1px solid var(--pink)}
+.toc-list li{border-bottom:1px solid var(--pink);font-size:14.5px}
+.toc-list a{
+  display:block;
+  padding:10px 4px;
+  font-weight:700;
+  color:var(--ink);
+  text-decoration:none;
+  border-bottom:none;
+}
+.toc-list a:hover{color:var(--muted)}
 
-.sec-head{font-family:"Noto Sans JP",sans-serif;font-size:18px;font-weight:700;
-  color:var(--ink);margin:40px 0 16px;padding-bottom:8px;
-  border-bottom:2px solid var(--ink);scroll-margin-top:16px}
+.sec-head{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  color:var(--ink);
+  background:var(--pink);
+  margin:40px 0 16px;
+  padding:8px 12px;
+  scroll-margin-top:16px;
+}
 
 .back-to-toc{margin-top:24px;text-align:right;font-size:13px}
-.back-to-toc a{color:var(--muted);border-bottom-color:var(--rule)}
-.back-to-toc a:hover{color:var(--indigo)}
+.back-to-toc a{color:var(--muted);border-bottom:1px solid var(--pink)}
+.back-to-toc a:hover{color:var(--ink);border-bottom-color:var(--ink)}
 
-.hero{position:relative;background:var(--card);border:2px solid var(--ink);
-  margin:44px 0 18px;padding:30px 26px 26px}
-.hero.is-urgent{border-color:var(--stamp)}
-.tombo{position:absolute;width:20px;height:20px;pointer-events:none}
-.tombo::before,.tombo::after{content:"";position:absolute;background:var(--rule)}
-.tombo::before{left:50%;top:0;bottom:0;width:1px}
-.tombo::after{top:50%;left:0;right:0;height:1px}
+.hero{
+  position:relative;
+  background:var(--ink);
+  color:var(--knock);
+  margin:44px 0 20px;
+  padding:32px 28px 28px;
+}
+.hero.is-urgent{background:var(--hot)}
+/* 緊急時は地を重ね刷りの濃色へ差し替える。白抜き 6.60:1 / --paper 5.79:1 */
+.hero.is-urgent .hero-label,
+.hero.is-urgent .count-sub{color:var(--paper)}
+.tombo{position:absolute;width:22px;height:22px;pointer-events:none}
+.tombo::before,.tombo::after{content:"";position:absolute}
+.tombo::before{left:50%;top:0;bottom:0;width:1px;background:var(--pink)}
+.tombo::after{top:50%;left:0;right:0;height:1px;background:var(--ink)}
 .tombo.tl{left:-11px;top:-11px}.tombo.tr{right:-11px;top:-11px}
 .tombo.bl{left:-11px;bottom:-11px}.tombo.br{right:-11px;bottom:-11px}
-.hero-label{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted)}
-.hero-name{font-size:18px;font-weight:700;margin:6px 0 2px;line-height:1.4}
-.hero-when{font-size:13px;color:var(--muted)}
-.count{display:flex;align-items:baseline;gap:10px;margin-top:18px;flex-wrap:wrap}
-.count-num{font-family:"Oswald",sans-serif;font-weight:600;
-  font-size:clamp(64px,17vw,116px);line-height:.86;letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums}
-.is-urgent .count-num{color:var(--stamp)}
-.count-unit{font-size:20px;font-weight:500;transform:translateY(-6px)}
-.count-sub{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.06em;
-  color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
-.hero-note{margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);
-  font-size:13px;color:var(--muted)}
+.hero-label{
+  font-family:"Oswald",sans-serif;
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--pink);
+}
+.hero-name{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  margin:6px 0 4px;
+  line-height:1.4;
+  color:var(--knock);
+}
+.hero-when{font-size:13px;color:var(--paper)}
+.count{display:flex;align-items:baseline;gap:10px;margin-top:20px;flex-wrap:wrap;color:var(--knock)}
+.count-num{
+  font-family:"Oswald",sans-serif;
+  font-weight:600;
+  font-size:clamp(64px,17vw,116px);
+  line-height:.86;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  color:var(--knock);
+}
+.is-urgent .count-num{color:var(--knock)}
+.count-unit{font-size:20px;font-weight:500;transform:translateY(-6px);color:var(--knock)}
+.count-sub{
+  font-family:"Oswald",sans-serif;
+  font-size:13px;
+  letter-spacing:.06em;
+  color:var(--pink);
+  margin-top:10px;
+  font-variant-numeric:tabular-nums;
+}
+.hero-note{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--pink);
+  font-size:13px;
+  color:var(--paper);
+}
+.hero-note .note-main{color:var(--knock);font-weight:700}
+.hero-note .note-sub{color:var(--paper)}
 
-h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
-  margin:48px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+h2{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:.04em;
+  background:var(--pink);
+  color:var(--ink);
+  margin:48px 0 16px;
+  padding:6px 12px;
+}
 .lead{font-size:14.5px;margin-top:24px}
 
-.row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;
-  border-bottom:1px solid var(--rule)}
-.row-date{flex:0 0 74px;font-family:"Oswald",sans-serif;font-size:12px;
-  letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums;
-  padding-top:3px;line-height:1.5}
+.row{
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+  padding:16px 0;
+  border-bottom:1px solid var(--pink);
+}
+.row-date{
+  flex:0 0 74px;
+  font-family:"Oswald",sans-serif;
+  font-size:12px;
+  letter-spacing:.04em;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+  padding-top:3px;
+  line-height:1.5;
+}
 .row-date b{display:block;font-size:19px;font-weight:600;color:var(--ink);letter-spacing:0}
 .row-date b.undec{display:inline-block;font-size:12px;font-weight:400;color:var(--muted)}
 .row-body{flex:1 1 auto;min-width:0}
-.row-name{font-weight:500;font-size:15px;line-height:1.5}
-.row-note{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
-.row-left{flex:0 0 auto;text-align:right;font-family:"Oswald",sans-serif;font-size:12px;
-  letter-spacing:.05em;color:var(--muted);padding-top:5px;font-variant-numeric:tabular-nums}
+.row-name{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  font-size:15px;
+  line-height:1.5;
+  color:var(--ink);
+}
+.row-note{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.6}
+.row-left{
+  flex:0 0 auto;
+  text-align:right;
+  font-family:"Oswald",sans-serif;
+  font-size:12px;
+  letter-spacing:.05em;
+  color:var(--muted);
+  padding-top:5px;
+  font-variant-numeric:tabular-nums;
+}
 .row-left b{font-size:22px;font-weight:600;color:var(--ink);display:block;line-height:1.1}
-.row.urgent .row-left b,.row.urgent .row-date b{color:var(--stamp)}
-.row.done{opacity:.5}
-/* deslop-ignore-next-line 09: 終了した締切の取り消し。装飾ではなく状態表示 */
-.row.done .row-name{text-decoration:line-through;text-decoration-thickness:1px}
-.stampmark{flex:0 0 auto;width:54px;height:54px;color:var(--seal);opacity:.75;
-  transform:rotate(-11deg);align-self:center}
+.row.urgent .row-left b,.row.urgent .row-date b{color:var(--hot)}
+.row.done .row-name{
+  color:var(--muted);
+  /* deslop-ignore-next-line 09: 終了した締切の取り消し。装飾ではなく状態表示 */
+  text-decoration:line-through;
+  text-decoration-thickness:1px;
+}
+.row.done .row-date b{color:var(--muted)}
+.stampmark{
+  flex:0 0 auto;
+  width:54px;
+  height:54px;
+  color:var(--ink);
+  transform:rotate(-11deg);
+  align-self:center;
+}
 @media(prefers-reduced-motion:no-preference){
   .stampmark{animation:press .5s cubic-bezier(.2,.9,.3,1) both}}
-@keyframes press{from{transform:rotate(-11deg) scale(1.5);opacity:0}
-  to{transform:rotate(-11deg) scale(1);opacity:.75}}
+@keyframes press{from{transform:rotate(-11deg) scale(1.5)}
+  to{transform:rotate(-11deg) scale(1)}}
 
 .links{list-style:none}
-.links li{padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
-.links li.pin .row-note{color:var(--seal)}
-.links li.pin a{font-weight:700}
-.host{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.09em;
-  color:var(--muted);margin-top:3px}
+.links li{padding:14px 0;border-bottom:1px solid var(--pink);font-size:14.5px}
+.links li a{font-weight:700}
+.host{
+  font-family:"Oswald",sans-serif;
+  font-size:11px;
+  letter-spacing:.09em;
+  color:var(--muted);
+  margin-top:3px;
+}
 .check{list-style:none;font-size:14px}
-.check li{padding:9px 0 9px 26px;position:relative;border-bottom:1px dotted var(--rule)}
-.check li::before{content:"";position:absolute;left:0;top:15px;
-  width:12px;height:12px;border:1px solid var(--ink)}
+.check li{
+  padding:10px 0 10px 26px;
+  position:relative;
+  border-bottom:1px dotted var(--pink);
+  color:var(--ink);
+}
+.check li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:16px;
+  width:12px;
+  height:12px;
+  border:1px solid var(--ink);
+  background:var(--card);
+}
 
 /* 当選後にやること */
 .tasks{list-style:none;counter-reset:tk}
-.tasks li{counter-increment:tk;position:relative;padding:20px 0 20px 52px;
-  border-bottom:1px solid var(--rule)}
-.tasks li::before{content:counter(tk,decimal-leading-zero);position:absolute;
-  left:0;top:21px;font-family:"Oswald",sans-serif;font-size:20px;font-weight:600;
-  color:var(--seal);letter-spacing:-.02em}
+.tasks li{
+  counter-increment:tk;
+  position:relative;
+  padding:22px 0 22px 52px;
+  border-bottom:1px solid var(--pink);
+}
+.tasks li::before{
+  content:counter(tk,decimal-leading-zero);
+  position:absolute;
+  left:0;
+  top:23px;
+  font-family:"Oswald",sans-serif;
+  font-size:22px;
+  font-weight:600;
+  color:var(--ink);
+  letter-spacing:-.02em;
+}
 .tk-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.tk-name{font-weight:700;font-size:15.5px;line-height:1.5}
-.badge{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.1em;
-  padding:2px 8px;border:1px solid var(--muted);color:var(--muted);white-space:nowrap}
-.badge.set{border-color:var(--muted);color:var(--muted);font-weight:600}
+.tk-name{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:900;
+  letter-spacing:-0.02em;
+  font-size:16px;
+  line-height:1.5;
+  color:var(--ink);
+}
+.badge{
+  font-family:"Oswald",sans-serif;
+  font-size:11px;
+  letter-spacing:.1em;
+  padding:2px 8px;
+  border:1px solid var(--muted);
+  color:var(--muted);
+  background:var(--card);
+  white-space:nowrap;
+}
+.badge.set{border-color:var(--ink);color:var(--ink);font-weight:600}
 /* deslop-ignore-next-line 09: 終了した締切の取り消し。装飾ではなく状態表示 */
-.badge.done{opacity:.5;text-decoration:line-through}
-.tk-meta{display:grid;grid-template-columns:64px 1fr;gap:5px 12px;
-  margin:10px 0;font-size:12.5px;line-height:1.6}
-.tk-k{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.12em;
-  color:var(--muted);padding-top:3px}
-.tk-note{font-size:13.5px;color:var(--muted);line-height:1.8}
-.tk-note.is-warn{color:var(--stamp)}
-.tk-files{margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule);font-size:13px}
-.tk-files div{margin-top:3px}
-.tk-files .lbl{font-family:"Oswald",sans-serif;font-size:10px;letter-spacing:.12em;
-  color:var(--muted);margin-right:7px}
+.badge.done{color:var(--muted);text-decoration:line-through}
+.tk-meta{
+  display:grid;
+  grid-template-columns:68px 1fr;
+  gap:6px 12px;
+  margin:12px 0;
+  font-size:13px;
+  line-height:1.65;
+  color:var(--ink);
+}
+.tk-k{
+  font-family:"Oswald",sans-serif;
+  font-size:11px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  padding-top:3px;
+}
+.tk-note{font-size:13.5px;color:var(--muted);line-height:1.8;margin-top:6px}
+.note-main{
+  font-family:"Noto Sans JP",sans-serif;
+  font-weight:700;
+  color:var(--ink);
+  display:block;
+  margin-bottom:2px;
+}
+.note-sub{display:block;font-size:12.5px;color:var(--muted)}
+.tk-files{margin-top:12px;padding-top:10px;border-top:1px dotted var(--pink);font-size:13px}
+.tk-files div{margin-top:4px}
+.tk-files .lbl{
+  font-family:"Oswald",sans-serif;
+  font-size:10.5px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  margin-right:8px;
+}
 .pending{color:var(--muted);font-size:12.5px}
 
 .row-src{margin-top:4px}
-.row-src a{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.1em;
-  color:var(--muted);border-bottom-color:var(--rule)}
-.row-src a:hover{color:var(--indigo)}
+.row-src a{
+  font-family:"Oswald",sans-serif;
+  font-size:11px;
+  letter-spacing:.1em;
+  color:var(--muted);
+  border-bottom:1px solid var(--pink);
+}
+.row-src a:hover{color:var(--ink);border-bottom-color:var(--ink)}
 
 .pending-row{border-bottom-style:dashed}
-.pending-row .row-name{font-weight:400;color:var(--muted)}
-.undec{font-family:"Noto Sans JP",sans-serif;font-size:12px;font-weight:400;
-  letter-spacing:.1em;color:var(--muted);border:1px solid var(--rule);
-  padding:1px 7px;display:inline-block}
+.pending-row .row-name{font-weight:500;color:var(--muted)}
+.undec{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:.1em;
+  color:var(--muted);
+  border:1px solid var(--pink);
+  padding:1px 7px;
+  display:inline-block;
+  background:var(--card);
+}
 
-.check.none li::before{border-style:dashed;opacity:.5}
+.check.none li::before{border-style:dashed;border-color:var(--muted)}
 .check.none li{color:var(--muted)}
 
-.rule-pat{background:var(--card);border:1px solid var(--rule);padding:12px 14px;
-  font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.04em;
-  word-break:break-all;margin-bottom:6px}
-.rule-k{font-family:"Oswald",sans-serif;font-size:13.5px;letter-spacing:.03em;
-  color:var(--stamp);font-weight:600}
+.rule-pat{
+  background:var(--card);
+  border:1px solid var(--pink);
+  padding:12px 16px;
+  font-family:"Oswald",sans-serif;
+  font-size:13.5px;
+  letter-spacing:.04em;
+  word-break:break-all;
+  margin-bottom:8px;
+  color:var(--ink);
+}
+.rule-k{
+  font-family:"Oswald",sans-serif;
+  font-size:13.5px;
+  letter-spacing:.03em;
+  color:var(--hot);
+  font-weight:600;
+}
 
-footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
-  font-size:12px;color:var(--muted)}
+.admin-details{
+  margin-top:36px;
+  background:var(--card);
+  border:1px solid var(--pink);
+  padding:14px 16px;
+}
+.admin-details summary{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--ink);
+  cursor:pointer;
+}
+.admin-details summary:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+.admin-details[open] summary{
+  margin-bottom:14px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--pink);
+}
+
+footer{
+  margin-top:64px;
+  padding-top:24px;
+  border-top:2px solid var(--ink);
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.7;
+}
 
 @media(min-width:640px){
   .toc,.sec-head,.back-to-toc{display:none}
@@ -240,7 +515,7 @@ footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
    ============================================================ */
 const DATA = {
 
-  title:   "コミケ サークル参加メモ",   /* サイトの名前。回が変わっても固定 */
+  title:   "Circle Ops Tracker",   /* サイトの名前。回が変わっても固定 */
   updated: "2026-08-17",
 
   /* 対象の回。no を変えると、URLの {n} が一斉に切り替わります */
@@ -629,8 +904,26 @@ const DATA = {
       <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="3"/>
       <!-- deslop-ignore-next-line 24: 判子（済スタンプ）の意匠。汎用アイコンではない -->
       <circle cx="50" cy="50" r="39" fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <text x="50" y="59" text-anchor="middle" font-family="'Shippori Mincho B1',serif"
-            font-size="30" font-weight="600" fill="currentColor">終了</text></svg>`;
+      <text x="50" y="59" text-anchor="middle" font-family="'Noto Sans JP',sans-serif"
+            font-size="28" font-weight="900" fill="currentColor">終了</text></svg>`;
+
+    const formatNote = (noteText, className) => {
+      if (!noteText) return "";
+      const s = String(noteText);
+      const cls = className ? ` class="${esc(className)}"` : "";
+      if (s.startsWith("★")) {
+        const clean = s.slice(1).trim();
+        const periodIdx = clean.indexOf("。");
+        if (periodIdx !== -1) {
+          const main = clean.slice(0, periodIdx + 1);
+          const rest = clean.slice(periodIdx + 1).trim();
+          return `<div${cls}><span class="note-main">${esc(main)}</span>${rest ? `<span class="note-sub">${esc(rest)}</span>` : ""}</div>`;
+        } else {
+          return `<div${cls}><span class="note-main">${esc(clean)}</span></div>`;
+        }
+      }
+      return `<div${cls}>${esc(s)}</div>`;
+    };
 
     const renderLinks = targetTab => {
       const groups = [];
@@ -649,10 +942,9 @@ const DATA = {
         res += `<h2>${esc(g.name)}</h2><ul class="links">`;
         g.items.forEach(l => {
           const host = getHost(l.url);
-          const isPin = l.note && String(l.note).startsWith("★");
-          res += `<li${isPin ? ' class="pin"' : ''}>
+          res += `<li>
             <a href="${esc(R(l.url))}" target="_blank" rel="noopener">${esc(l.name)}</a>
-            ${l.note ? `<div class="row-note">${esc(l.note)}</div>` : ""}
+            ${l.note ? formatNote(l.note, "row-note") : ""}
             ${host ? `<div class="host">${esc(host)}</div>` : ""}</li>`;
         });
         res += `</ul>`;
@@ -676,7 +968,6 @@ const DATA = {
             ? `<span class="badge done">終了</span>`
             : `<span class="badge set">あと${left}日</span>`;
         }
-        const isWarn = x.note && String(x.note).startsWith("★");
         const checkUrl = x.check && x.check.url;
         const checkName = x.check && x.check.name;
         const pdfUrl = x.pdf && x.pdf.url;
@@ -689,7 +980,7 @@ const DATA = {
             <span class="tk-k">方法</span><span>${esc(x.how || "")}</span>
             <span class="tk-k">要るもの</span><span>${(x.need || []).map(n=>esc(n)).join("<br>")}</span>
           </div>
-          ${x.note ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(x.note)}</div>` : ""}`;
+          ${x.note ? formatNote(x.note, "tk-note") : ""}`;
 
         if (checkUrl || pdfName) {
           res += `<div class="tk-files">`;
@@ -718,6 +1009,7 @@ const DATA = {
 
     html += `<header>
       <h1>${esc(DATA.title)}</h1>
+      <div class="subtitle-main">コミケ参加・手続き進行表</div>
       <div class="subtitle"><b>${esc(DATA.event && DATA.event.name)}</b>　${esc(DATA.event && DATA.event.dates)}</div>
       <div class="meta">
         <span>会場 <b>${esc(DATA.event && DATA.event.venue)}</b></span>
@@ -758,7 +1050,7 @@ const DATA = {
         <div class="hero-when">${fmtFull(next.t)}</div>
         <div class="count"><span class="count-num" id="cnum">–</span><span class="count-unit" id="cunit">日</span></div>
         <div class="count-sub" id="csub"></div>
-        ${next.note ? `<div class="hero-note">${esc(next.note)}</div>` : ""}
+        ${next.note ? formatNote(next.note, "hero-note") : ""}
       </section>`;
     } else {
       u += `<section class="hero">
@@ -777,8 +1069,8 @@ const DATA = {
       return `<div class="row ${past?'done':''} ${urgent?'urgent':''}">
         <div class="row-date"><b>${fmtDate(i.t)}</b>${pad(i.t.getHours())}:${pad(i.t.getMinutes())}</div>
         <div class="row-body"><div class="row-name">${esc(i.name)}</div>
-          ${i.note?`<div class="row-note">${esc(i.note)}</div>`:""}
-          ${i.src?`<div class="row-src"><a href="${esc(R(i.src))}" target="_blank" rel="noopener">出典を見る</a></div>`:""}</div>
+          ${i.note ? formatNote(i.note, "row-note") : ""}
+          ${i.src ? `<div class="row-src"><a href="${esc(R(i.src))}" target="_blank" rel="noopener">出典を見る</a></div>` : ""}</div>
         ${past ? stampSVG : `<div class="row-left"><b>${left}</b>日</div>`}
       </div>`;
     });
@@ -817,9 +1109,10 @@ const DATA = {
     ap += renderLinks("apply");
     ap += `<h2>ログインに要るもの</h2><ul class="check">`;
     (DATA.keys || []).forEach(k => ap += `<li>${esc(k)}</li>`);
-    ap += `</ul><h2>更新するとき見るところ</h2><ul class="check">`;
-    (DATA.checklist || []).forEach(c => ap += `<li>${esc(c)}</li>`);
     ap += `</ul>`;
+    ap += `<details class="admin-details"><summary>更新するとき見るところ（管理用）</summary><ul class="check">`;
+    (DATA.checklist || []).forEach(c => ap += `<li>${esc(c)}</li>`);
+    ap += `</ul></details>`;
     ap += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
     ap += `</div>`;
 
@@ -831,16 +1124,16 @@ const DATA = {
     f += renderTasks(A.items || [], "申請の一覧");
 
     const RULE = A.urlrule || { pattern: "", rows: [], notes: [] };
-    f += `<h2>公式サイトのURLの規則</h2>
+    f += `<details class="admin-details"><summary>公式サイトのURLの規則（管理用）</summary>
       <div class="rule-pat">${esc(RULE.pattern || "")}</div>
       <ul class="links">`;
     (RULE.rows || []).forEach(r => {
       f += `<li><code class="rule-k">${esc(r.k || "")}</code>
-        <div class="row-note">${esc(r.v || "")}</div></li>`;
+        ${r.v ? formatNote(r.v, "row-note") : ""}</li>`;
     });
     f += `</ul><ul class="check">`;
     (RULE.notes || []).forEach(n => f += `<li>${esc(n)}</li>`);
-    f += `</ul>`;
+    f += `</ul></details>`;
     f += renderLinks("after");
     f += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
     f += `</div>`;
@@ -855,21 +1148,20 @@ const DATA = {
     (O.flow || []).forEach(x => {
       if (!x) return;
       o += `<li><div class="tk-head"><span class="tk-name">${esc(x.t || "")}</span></div>
-        <div class="tk-note">${esc(x.d || "")}</div></li>`;
+        ${x.d ? formatNote(x.d, "tk-note") : ""}</li>`;
     });
     o += `</ol>`;
 
     o += `<h2>紙もの</h2><ol class="tasks">`;
     (O.papers || []).forEach(p => {
       if (!p) return;
-      const isWarn = p.how && String(p.how).startsWith("★");
       o += `<li>
         <div class="tk-head"><span class="tk-name">${esc(p.name || "")}</span>
           <span class="badge">${esc(p.when || "")}</span></div>
-        ${p.how ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(p.how)}</div>` : ""}
+        ${p.how ? formatNote(p.how, "tk-note") : ""}
         <div class="tk-meta"><span class="tk-k">書く欄</span>
           <span>${(p.fill || []).map(x=>esc(x)).join("<br>")}</span></div>
-        ${p.note ? `<div class="tk-note">${esc(p.note)}</div>` : ""}</li>`;
+        ${p.note ? formatNote(p.note, "tk-note") : ""}</li>`;
     });
     o += `</ol>`;
 
@@ -878,7 +1170,7 @@ const DATA = {
     (S.yes || []).forEach(x => o += `<li>${esc(x)}</li>`);
     o += `</ul><h2>出さないもの</h2><ul class="check none">`;
     (S.no || []).forEach(x => o += `<li>${esc(x)}</li>`);
-    o += `</ul>${S.note ? `<p class="tk-note" style="margin-top:14px">${esc(S.note)}</p>` : ""}`;
+    o += `</ul>${S.note ? formatNote(S.note, "tk-note") : ""}`;
 
     o += `<h2>持ち物</h2><ul class="check">`;
     (O.bring || []).forEach(x => o += `<li>${esc(x)}</li>`);
