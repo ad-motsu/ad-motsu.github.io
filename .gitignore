@@ -1,0 +1,5 @@
+tools/out/
+.DS_Store
+_private/
+__pycache__/
+*.pyc

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<!--
+==================================================================
+  コミケ サークル参加メモ（個人用・非公式）
+
+  【次の回に切り替えるとき】
+  DATA の event.no を変えてください（例: "109" → "110"）。
+  リンクの中の {n} が一斉に置き換わります。
+  event.name / dates / venue / fee も忘れずに。
+
+  【日程が発表されたら】
+  「当選後にやること」の各項目にある at: null を、
+  確定した日時に書き換えてください。それだけで
+  「締切一覧」タブの一覧とカウントダウンに自動で合流します。
+
+      at: null                            ← 未定（日程未定と表示される）
+      at: "2026-12-05T23:59:59+09:00"     ← 確定（あと何日と表示される）
+
+  日時は +09:00（日本時間）を付けます。
+  「消印有効」など時刻がないものは、その日の 23:59:59 にします。
+
+  【PDFが公開されたら】
+  各項目の pdf: の url を書き換えます。空のままだと「公開待ち」と表示。
+  PDFのURLは回ごとに変わりますが、check（確認先）は変わりません。
+
+  タブは URL で切り替わります → #usual / #first / #onsite
+==================================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="コミックマーケットのサークル参加・申込締切メモ。締切カウントダウンと当落後・当日のチェックリスト。">
+<meta property="og:title" content="コミケ サークル参加メモ">
+<meta property="og:description" content="コミックマーケットのサークル参加・申込締切メモ。締切カウントダウンと当落後・当日のチェックリスト。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ad-motsu.github.io/comiket/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>コミケ サークル参加メモ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Oswald:wght@300;400;600&family=Shippori+Mincho+B1:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1a1c; --paper:#e6e5de; --card:#f7f6f2; --rule:#c9c7bd;
+  --muted:#595750; --stamp:#b32a22; --indigo:#24507d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg,rgba(26,26,28,.045) 0 1px,transparent 1px 34px),
+    repeating-linear-gradient(90deg,rgba(26,26,28,.045) 0 1px,transparent 1px 34px);
+  line-height:1.75;font-size:15px;padding:0 18px 80px;
+}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--indigo);text-decoration:none;border-bottom:1px solid rgba(36,80,125,.35)}
+a:hover{border-bottom-color:var(--indigo)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--stamp);outline-offset:3px}
+
+.stale{background:var(--stamp);color:#fff;font-size:13px;font-weight:500;
+  padding:10px 16px;margin:0 -18px;text-align:center}
+
+.disclaimer{border:1px solid var(--stamp);background:rgba(179,42,34,.05);
+  padding:11px 14px;margin-top:20px;font-size:12.5px;line-height:1.65;color:#7d2019}
+.disclaimer b{font-weight:700}
+
+header{padding:40px 0 26px}
+.eyebrow{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--muted)}
+h1{font-family:"Shippori Mincho B1",serif;font-weight:600;
+  font-size:clamp(26px,6vw,36px);line-height:1.25;margin:8px 0 4px}
+.subtitle{font-size:13.5px;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-size:12px;color:var(--muted)}
+.meta b{font-weight:500;color:var(--ink)}
+
+.tabs{display:flex;border-bottom:2px solid var(--ink);margin-top:30px;align-items:stretch}
+.tab{font-family:"Noto Sans JP",sans-serif;font-size:14.5px;font-weight:500;
+  background:none;cursor:pointer;color:var(--muted);padding:13px 22px;
+  position:relative;top:2px;line-height:1.4;
+  border:1px solid transparent;border-bottom:none;
+  display:inline-flex;align-items:center;justify-content:center}
+.tab[aria-selected="true"]{color:var(--ink);font-weight:700;background:var(--card);
+  border-color:var(--ink);border-bottom:2px solid var(--card)}
+.panel[hidden]{display:none}
+
+.hero{position:relative;background:var(--card);border:2px solid var(--ink);
+  margin:44px 0 18px;padding:30px 26px 26px}
+.hero.is-urgent{border-color:var(--stamp)}
+.tombo{position:absolute;width:20px;height:20px;pointer-events:none}
+.tombo::before,.tombo::after{content:"";position:absolute;background:var(--rule)}
+.tombo::before{left:50%;top:0;bottom:0;width:1px}
+.tombo::after{top:50%;left:0;right:0;height:1px}
+.tombo.tl{left:-11px;top:-11px}.tombo.tr{right:-11px;top:-11px}
+.tombo.bl{left:-11px;bottom:-11px}.tombo.br{right:-11px;bottom:-11px}
+.hero-label{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted)}
+.hero-name{font-size:18px;font-weight:700;margin:6px 0 2px;line-height:1.4}
+.hero-when{font-size:13px;color:var(--muted)}
+.count{display:flex;align-items:baseline;gap:10px;margin-top:18px;flex-wrap:wrap}
+.count-num{font-family:"Oswald",sans-serif;font-weight:600;
+  font-size:clamp(64px,17vw,116px);line-height:.86;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.is-urgent .count-num{color:var(--stamp)}
+.count-unit{font-size:20px;font-weight:500;transform:translateY(-6px)}
+.count-sub{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.06em;
+  color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
+.hero-note{margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);
+  font-size:13px;color:var(--muted)}
+
+h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  margin:48px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.lead{font-size:14.5px;margin-top:24px}
+
+.row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;
+  border-bottom:1px solid var(--rule)}
+.row-date{flex:0 0 74px;font-family:"Oswald",sans-serif;font-size:12px;
+  letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums;
+  padding-top:3px;line-height:1.5}
+.row-date b{display:block;font-size:19px;font-weight:600;color:var(--ink);letter-spacing:0}
+.row-date b.undec{display:inline-block;font-size:12px;font-weight:400;color:var(--muted)}
+.row-body{flex:1 1 auto;min-width:0}
+.row-name{font-weight:500;font-size:15px;line-height:1.5}
+.row-note{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.6}
+.row-left{flex:0 0 auto;text-align:right;font-family:"Oswald",sans-serif;font-size:12px;
+  letter-spacing:.05em;color:var(--muted);padding-top:5px;font-variant-numeric:tabular-nums}
+.row-left b{font-size:22px;font-weight:600;color:var(--ink);display:block;line-height:1.1}
+.row.urgent .row-left b,.row.urgent .row-date b{color:var(--stamp)}
+.row.done{opacity:.5}
+.row.done .row-name{text-decoration:line-through;text-decoration-thickness:1px}
+.stampmark{flex:0 0 auto;width:54px;height:54px;color:var(--stamp);opacity:.75;
+  transform:rotate(-11deg);align-self:center}
+@media(prefers-reduced-motion:no-preference){
+  .stampmark{animation:press .5s cubic-bezier(.2,.9,.3,1) both}}
+@keyframes press{from{transform:rotate(-11deg) scale(1.5);opacity:0}
+  to{transform:rotate(-11deg) scale(1);opacity:.75}}
+
+.links{list-style:none}
+.links li{padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
+.links li.pin .row-note{color:var(--stamp)}
+.links li.pin a{font-weight:700}
+.host{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.09em;
+  color:var(--muted);margin-top:3px}
+.check{list-style:none;font-size:14px}
+.check li{padding:9px 0 9px 26px;position:relative;border-bottom:1px dotted var(--rule)}
+.check li::before{content:"";position:absolute;left:0;top:15px;
+  width:12px;height:12px;border:1px solid var(--ink)}
+
+/* 当選後にやること */
+.tasks{list-style:none;counter-reset:tk}
+.tasks li{counter-increment:tk;position:relative;padding:20px 0 20px 52px;
+  border-bottom:1px solid var(--rule)}
+.tasks li::before{content:counter(tk,decimal-leading-zero);position:absolute;
+  left:0;top:21px;font-family:"Oswald",sans-serif;font-size:20px;font-weight:600;
+  color:var(--stamp);letter-spacing:-.02em}
+.tk-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tk-name{font-weight:700;font-size:15.5px;line-height:1.5}
+.badge{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.1em;
+  padding:2px 8px;border:1px solid var(--muted);color:var(--muted);white-space:nowrap}
+.badge.set{border-color:var(--stamp);color:var(--stamp);font-weight:600}
+.badge.done{opacity:.5;text-decoration:line-through}
+.tk-meta{display:grid;grid-template-columns:64px 1fr;gap:5px 12px;
+  margin:10px 0;font-size:12.5px;line-height:1.6}
+.tk-k{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.12em;
+  color:var(--muted);padding-top:3px}
+.tk-note{font-size:13.5px;color:#5c5a54;line-height:1.8}
+.tk-note.is-warn{color:#7d2019}
+.tk-files{margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule);font-size:13px}
+.tk-files div{margin-top:3px}
+.tk-files .lbl{font-family:"Oswald",sans-serif;font-size:10px;letter-spacing:.12em;
+  color:var(--muted);margin-right:7px}
+.pending{color:var(--muted);font-size:12.5px}
+
+.row-src{margin-top:4px}
+.row-src a{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.1em;
+  color:var(--muted);border-bottom-color:var(--rule)}
+.row-src a:hover{color:var(--indigo)}
+
+.pending-row{border-bottom-style:dashed}
+.pending-row .row-name{font-weight:400;color:#54524c}
+.undec{font-family:"Noto Sans JP",sans-serif;font-size:12px;font-weight:400;
+  letter-spacing:.1em;color:var(--muted);border:1px solid var(--rule);
+  padding:1px 7px;display:inline-block}
+
+.check.none li::before{border-style:dashed;opacity:.5}
+.check.none li{color:var(--muted)}
+
+.rule-pat{background:var(--card);border:1px solid var(--rule);padding:12px 14px;
+  font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.04em;
+  word-break:break-all;margin-bottom:6px}
+.rule-k{font-family:"Oswald",sans-serif;font-size:13.5px;letter-spacing:.03em;
+  color:var(--stamp);font-weight:600}
+
+footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
+  font-size:12px;color:var(--muted)}
+
+@media(max-width:520px){
+  .tab{padding:10px 4px;font-size:12.5px;flex:1 1 0;text-align:center;line-height:1.3}
+  .row{flex-wrap:wrap;gap:10px}
+  .row-date{flex-basis:100%;display:flex;align-items:baseline;gap:8px}
+  .row-date b{display:inline}
+  .row-body{flex-basis:100%;order:3}
+  .row-left{order:2;margin-left:auto}
+  .stampmark{order:4;width:44px;height:44px}
+  .tasks li{padding-left:40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<script>
+/* ============================================================
+   ★ 書き換えるのはここだけ ★
+   ============================================================ */
+const DATA = {
+
+  title:   "コミケ サークル参加メモ",   /* サイトの名前。回が変わっても固定 */
+  updated: "2026-08-17",
+
+  /* 対象の回。no を変えると、URLの {n} が一斉に切り替わります */
+  event: {
+    no:    "109",
+    name:  "コミックマーケット109",
+    dates: "2026年12月29日（火）〜31日（木）",
+    venue: "東京ビッグサイト 東1〜3／東7〜8ホール・西展示棟・南展示棟",
+    fee:   "1スペース 7,000円"
+  },
+
+  /* 申込まわりの締切 */
+  deadlines: [
+    { name:"郵送申込 締切",
+      at:"2026-08-19T23:59:59+09:00",
+      note:"消印有効。申込書セット冊子版の購入が必要",
+      src:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" },
+    { name:"オンライン申込 決済締切",
+      at:"2026-08-23T18:00:00+09:00",
+      note:"これ以降は新規申込できません",
+      src:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" },
+    { name:"オンライン申込 締切",
+      at:"2026-08-24T11:00:00+09:00",
+      note:"決済済みの申込内容の確定期限",
+      src:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" },
+    { name:"1日目",
+      at:"2026-12-29T10:30:00+09:00",
+      note:"サークル入場 8:00〜9:30（予定）／サークル 10:30〜16:00",
+      kind:"event",                      /* 開催日の目印。未定の申請はこの手前に並びます */
+      src:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" }
+  ],
+
+  links: [
+    { group:"作業する画面", name:"Circle.ms ポータル",
+      url:"https://portal.circle.ms/",
+      note:"ログインの入口。オンライン申込はここから" },
+    { group:"作業する画面", name:"Webカタログ サークル側（サークル情報登録＆当落検索）",
+      url:"https://succession.circle.ms/",
+      note:"★当落確認とWebカタログ編集は同じここ。時期で機能が切り替わる" },
+    { group:"作業する画面", name:"コミケWebカタログ（一般側）",
+      url:"https://webcatalog.circle.ms/",
+      note:"自分のサークルページの見え方を確認する用" },
+    { group:"作業する画面", name:"申込書セット冊子版・封筒の通販",
+      url:"https://shop.circle.ms/CShopping/List",
+      note:"郵送申込のときだけ必要" },
+
+    { group:"公式の案内", name:"申込サークルサポートページ",
+      url:"https://www.comiket.co.jp/info-c/index.html",
+      note:"★回ごとの手引きやPDFはここから辿れる。URLが変わらない起点" },
+    { group:"公式の案内", name:"日程と申込書セットのご案内",
+      url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html",
+      note:"締切の一次情報はここ" },
+    { group:"公式の案内", name:"サークル参加申込書セット（PDF）",
+      url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.pdf",
+      note:"オンライン申込でも必読" },
+    { group:"公式の案内", name:"ジャンルコード一覧",
+      url:"https://www.comiket.co.jp/info-c/C{n}/C{n}genre.html",
+      note:"申し込む日はジャンルで決まる" },
+    { group:"公式の案内", name:"オンライン申込サポートページ",
+      url:"https://www.comiket.co.jp/info-c/e_application/e_application.html",
+      note:"申込方法の変更点が載る" },
+    { group:"公式の案内", name:"Webカタログ サークル側について",
+      url:"https://www.comiket.co.jp/cdbms/",
+      note:"編集できる期間のスケジュール表がある" },
+
+    { group:"操作ガイド", name:"オンライン申込のやり方",
+      url:"https://docs.circle.ms/howto/10.html",
+      note:"サークルカットのアップロード手順もここ" },
+    { group:"操作ガイド", name:"Web申込の詳細・諸注意",
+      url:"https://docs.circle.ms/howto/50.html",
+      note:"公式が併読を指定しているページ" },
+    { group:"操作ガイド", name:"Webカタログ サークル側の使い方",
+      url:"https://docs.circle.ms/webcatalog/ctn/creator/",
+      note:"情報の編集画面までの辿り方" },
+    { group:"操作ガイド", name:"郵送申込のひも付け方法",
+      url:"https://docs.circle.ms/webcatalog/ctn/creator/001.html",
+      note:"郵送で申し込んだ場合のみ必要" }
+  ],
+
+  keys: [
+    "Circle.msのアカウント（メールアドレスとパスワード）",
+    "郵送申込の場合：受付番号・電話番号・生年月日・申込書番号の4点",
+    "申込書番号は『払込金受領証』に記載されている"
+  ],
+
+  checklist: [
+    "日程と申込書セットのご案内 → 締切の日付と時刻",
+    "オンライン申込サポートページ → 申込方法の変更点",
+    "ジャンルコード一覧 → URLが回ごとに変わる",
+    "申込書セットPDF → URLが回ごとに変わる",
+    "参加費が変わっていないか"
+  ],
+
+  /* ── 当選後にやること ──────────────────────
+     at に日時を入れると「締切一覧」タブに自動で合流します。
+     pdf の url は公開されたら入れてください（空なら公開待ちと表示）。
+     check は毎回変わらない確認先です。
+     ─────────────────────────────────────── */
+  after: {
+
+    intro: "当選してからも申請と準備がいくつかあります。時期はだいたいの目安で、正式な日程は当落発表後に公式で発表されます。日程が出たら各項目の at に入れてください。「締切一覧」タブにあと何日と表示されるようになります。当日そのものの動きは「当日やること」タブにあります。",
+
+    items: [
+      { name:"当落速報メールのアドレス登録",
+        when:"申込のあと、当落発表まで",
+        at:null,
+        how:"Webカタログ サークル側の情報編集画面から登録",
+        need:["Circle.msのアカウント（郵送申込はひも付けが必要）"],
+        note:"★これを飛ばすと後で困る。コミケットアピールのURLは当落速報メールと通行証裏のQRでしか案内されないため、登録していないとアピールに辿り着けない。駐車券の申込要領も見本誌票の追加入手の宛先もアピールにしか載っていない。編集できる期間内なら何度でも変更できるので、早めに入れておく。",
+        check:{ name:"Webカタログ サークル側の使い方", url:"https://docs.circle.ms/webcatalog/ctn/creator/" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"当落の確認",
+        when:"申込のおよそ2ヶ月後",
+        at:null,
+        how:"Webカタログ サークル側",
+        need:["Circle.msのアカウント（郵送申込はひも付けが必要）"],
+        note:"当落通知は郵送でも届く。速報メールを登録しておけば郵送より先に分かる。Web側は当落検索とサークル情報登録が同じシステムで、時期によって機能が切り替わる。",
+        check:{ name:"Webカタログ サークル側", url:"https://succession.circle.ms/" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"Webカタログへのサークル情報登録",
+        when:"当落発表後〜Webカタログ公開まで",
+        at:null,
+        how:"Webカタログ サークル側",
+        need:["Circle.msのアカウント"],
+        note:"編集できる期間が決まっている。申込責任者の住所変更もこの画面からしかできない。期間の一覧は確認先のページに表で載る。",
+        check:{ name:"Webカタログ サークル側について", url:"https://www.comiket.co.jp/cdbms/" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"サークル駐車券の申請",
+        when:"当選後",
+        at:null,
+        how:"Webカタログ サークル側から申込（詳細はコミケットアピールの「駐車券について」）",
+        need:["当選していること","コミケットアピール（当落通知で案内される）"],
+        note:"★申込は当選サークルのみ。1スペースにつき1台まで。入金後のキャンセルはできない。抽選になる場合や、配置場所から遠い駐車場が割り当てられる場合がある。駐車券のない車での送迎は自粛を求められている。申込方法は回によって変わるので必ず確認する。",
+        check:{ name:"Webカタログ サークル側", url:"https://succession.circle.ms/" },
+        pdf:{ name:"コミケットアピール（URLは当選者に案内される）", url:"" } },
+
+      { name:"サークル前日搬入申請 / 大量搬入申請",
+        when:"開催のおよそ1ヶ月前",
+        at:null,
+        how:"搬入・搬出の手引きに従って申請",
+        need:["当選していること","配置場所"],
+        note:"この申請をしたサークルだけが手引きの対象になる。前日に荷物を運び込む場合や、搬入量が多い場合に必要。手引きは回ごとに公開される。",
+        check:{ name:"申込サークルサポートページ", url:"https://www.comiket.co.jp/info-c/index.html" },
+        pdf:{ name:"搬入・搬出の手引き", url:"" } },
+
+      { name:"サークル作業員証 事前申請",
+        when:"開催のおよそ3〜5週間前（消印有効）",
+        at:null,
+        how:"郵送（準備会の「サークル前日搬入係」宛）",
+        need:["事前申請書（公式PDF。使用は任意）","110円切手を貼った長3の返信用封筒","往信用とは別に返信用を同封する"],
+        note:"前日搬入の時間帯に入場するには作業員証が要る。1スペースにつき2枚が発送される。締切後も可能な限り対応するとされている。追加や再発行は当日の搬入窓口で。宛先の係名は回ごとに変わるので必ず確認する。",
+        check:{ name:"申込サークルサポートページ", url:"https://www.comiket.co.jp/info-c/index.html" },
+        pdf:{ name:"サークル作業員証 事前申請書", url:"" } },
+
+      { name:"搬入物貼付用紙の作成",
+        when:"荷物を発送する前",
+        at:null,
+        how:"Webカタログ サークル側から生成",
+        need:["配置が決まっていること"],
+        note:"サークル配置とサークル名が入った状態のPDFを作れる。手書きしなくて済む。日別に用紙が分かれているので、自分の参加日のものを使う。",
+        check:{ name:"Webカタログ サークル側", url:"https://succession.circle.ms/" },
+        pdf:{ name:"搬入物貼付用紙", url:"" } },
+
+      { name:"印刷所への直接搬入の手配",
+        when:"印刷所の締切に従う",
+        at:null,
+        how:"印刷所ごとに手続きが違う",
+        need:["配置場所","サークル名"],
+        note:"公式の管轄外。落選すると無駄になるので、当選を確認してから予約するのが安全。",
+        check:{ name:"", url:"" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"見本誌票の受け取り",
+        when:"当落通知が届いたとき",
+        at:null,
+        how:"当落通知の封筒に同封されている",
+        need:["当選していること"],
+        note:"当選サークルにのみ同封される。以前の回に余ったものも使える。ここで受け取った票を、当日までに新刊へ貼っておく。",
+        check:{ name:"サークル受付の説明（回ごとに公開）", url:"https://www.comiket.co.jp/info-c/index.html" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"見本誌票の追加入手",
+        when:"開催のおよそ2週間前まで",
+        at:null,
+        how:"返信用封筒を同封して準備会の「見本誌票係」へ郵送で問い合わせ",
+        need:["住所・氏名を記入した長3の返信用封筒","コミケットアピールの該当ページ（宛先と要領が載る）"],
+        note:"票が足りないときだけ。当日もサークル窓口で配布しているので、1〜2枚の不足なら当日でも間に合う。事前に確実に用意したい場合のみこの手続きを使う。",
+        check:{ name:"サークル受付の説明（回ごとに公開）", url:"https://www.comiket.co.jp/info-c/index.html" },
+        pdf:{ name:"コミケットアピール（URLは当選者に案内される）", url:"" } },
+
+      { name:"見本誌の準備（票の貼り付け）",
+        when:"当落通知が届いてから当日までの間",
+        at:null,
+        how:"自宅で作業できる",
+        need:["見本誌票","見本誌にする新刊を1部ずつ"],
+        note:"★事前にできる作業はここまで。封筒は当日スペースに置かれるもので、事前には入手できない。当日は「票を貼った見本誌を封筒に入れて出すだけ」の状態にしておくと受付が早く終わる。書く欄の詳細は当日やることタブに置いてある。",
+        check:{ name:"サークル受付の説明（回ごとに公開）", url:"https://www.comiket.co.jp/info-c/index.html" },
+        pdf:{ name:"", url:"" } }
+    ],
+
+    /* 当日まわりは onsite に分けています */
+
+    /* 公式サイトのURLの規則（C105〜C109で確認） */
+    urlrule: {
+      pattern: "https://www.comiket.co.jp/info-c/C{回}/C{回}{固定名}",
+      rows: [
+        { k:"Appset.html", v:"日程と申込書セットのご案内" },
+        { k:"Appset.pdf", v:"サークル参加申込書セット" },
+        { k:"genre.html", v:"ジャンルコード一覧" },
+        { k:"CircleRegistration.html", v:"サークル受付の説明（見本誌の出し方）" },
+        { k:"HandbookOfCarrying-c/", v:"搬入・搬出の手引き" }
+      ],
+      notes: [
+        "回数を差し替えれば公開前でも当たりを付けられる。ただし公開されるまでは404になる。",
+        "大文字小文字が揺れている回がある（C105は appeal.html と Appeal.pdf が併存）。404のときはここを疑う。",
+        "コミケットアピールのURLは当落速報メールと通行証裏のQRでしか案内されない。事前にリンクを貼れない。",
+        "日付は毎回変わるが曜日と時刻は安定している。決済締切は日曜18:00、申込締切は翌月曜11:00、郵送は水曜消印有効。"
+      ]
+    }
+  },
+
+  /* ── 当日やること ────────────────────────
+     時刻や受付場所は回ごとに変わります。開催が近づいたら
+     コミケットアピールとサークル受付の説明で確認してください。
+     ─────────────────────────────────────── */
+  onsite: {
+
+    intro: "全ての参加サークルはサークル受付を行う必要があります。受付が完了するまで頒布は一切できません。ここでいう受付とは、見本誌提出用の封筒をサークル窓口に出すことです。見本誌が無くても封筒は出します。",
+
+    flow: [
+      { t:"入場", d:"出展サークル専用通行証をサークル入口でスタッフに渡し、リストバンド型のサークル用参加証と交換する。入場時間と入口の場所は回ごとに変わるのでアピールで確認する。" },
+      { t:"設営", d:"スペースの机上に「参加登録（見本誌提出用）封筒」が配布または貼付されている。事前には郵送されないので、当日ここで初めて受け取る。" },
+      { t:"見本誌の準備", d:"事前に届いている見本誌票を新刊に貼り、封筒に入れる。封筒には見本誌数と成年向けの有無を記入する。票を貼る作業は家で済ませておける（当選後にやることタブを参照）。" },
+      { t:"サークル受付", d:"封をせずにサークル窓口へ提出する。自分が配置されているホールの窓口が原則。" },
+      { t:"開会", d:"受付が終わっていれば頒布を開始できる。間に合いそうにない場合は、先に出せる見本誌と封筒だけでも開会時刻までに提出する。" }
+    ],
+
+    papers: [
+      { name:"見本誌票",
+        when:"事前に届く",
+        how:"当選サークルにのみ、当落通知の封筒に同封される",
+        fill:["受付番号","配置場所（2スペース当選ならa/b両方に○）","サークル名（委託は提出するサークル名）","誌名（本のタイトル）","発行日（不明なら当日の日付）","頒布価格（無料なら0）"],
+        note:"以前の回のものも使える。足りない場合は当日サークル窓口で配布している。開催前に追加でほしい場合は、開催2週間前までに返信用封筒を同封して「見本誌票係」へ問い合わせる。" },
+
+      { name:"参加登録（見本誌提出用）封筒",
+        when:"当日スペースに置かれている",
+        how:"★事前に郵送されない。準備会スタッフが当日、配置スペースに配布・貼付している",
+        fill:["見本誌数（無い場合も0と記入）","成年向け見本誌の有無を○で囲む"],
+        note:"サークル情報の部分は印字済みのことが多い。印字されている場合は内容が合っているか確認する。見本誌の有無に関わらず、封をせずに提出する。予備の封筒はサークル窓口で配布している。" }
+    ],
+
+    submit: {
+      yes: ["本（コピー本、無料配布も対象）","電子メディア（オンライン頒布物を含む）","カレンダー","カード・ボードゲーム","そのほか準備会が必要と判断した頒布物"],
+      no:  ["過去のコミケットに提出済みの見本誌","ポスター","ペーパー","クリアファイル","そのほかグッズ類"],
+      note:"見本誌とは、過去のコミケットで頒布していない本・電子メディア等のこと。提出したものは返却されない。抱き枕は見本誌提出は不要だが頒布物の確認が必要なので、サークル受付窓口へ持って行く（梱包されていると開封されることがあるので、同サイズの出力見本があるとよい）。頒布物がダウンロード形式などでオンラインでしか確認できない場合は、メディアに書き込んで提出する。それができないと販売停止カードが発行されることがある。"
+    },
+
+    bring: [
+      "出展サークル専用通行証",
+      "見本誌票（事前に届いたもの。以前のものも可）",
+      "見本誌にする新刊を1部ずつ",
+      "サークル参加申込書セット（コミケットマニュアル）",
+      "コミケットアピール",
+      "筆記用具（封筒と見本誌票の記入用）",
+      "サークル作業員証（前日搬入を申請した場合）",
+      "サークル駐車券（申請した場合）"
+    ]
+  }
+};
+/* ============================================================
+   ★ 書き換えるのはここまで ★
+   ============================================================ */
+</script>
+
+<div id="app"></div>
+
+<script>
+(function(){
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  try {
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const pad = n => String(n).padStart(2,'0');
+    const now0 = new Date();
+    /* URL中の {n} を回数に置き換える */
+    const R = u => String(u || "").replace(/\{n\}/g, (DATA.event && DATA.event.no) || "");
+
+    const getHost = u => {
+      try {
+        return u ? new URL(R(u)).hostname : "";
+      } catch (_) {
+        return "";
+      }
+    };
+
+    /* 申込の締切 ＋ 当選後の申請のうち日程が確定したもの を合流 */
+    const fromAfter = ((DATA.after && DATA.after.items) || [])
+      .filter(x => x && x.at)
+      .map(x => ({ name: x.name, at: x.at, note: x.how, src: R((x.check && x.check.url) || "") }));
+    const items = [...(DATA.deadlines || []), ...fromAfter]
+      .filter(d => d && d.at)
+      .map(d => ({ ...d, t: new Date(d.at) }))
+      .sort((a, b) => a.t - b.t);
+
+    const next = items.find(i => i.t > now0);
+    const fmtDate = d => `${d.getMonth()+1}/${d.getDate()}`;
+    const fmtFull = d => {
+      const w = "日月火水木金土"[d.getDay()];
+      return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${w}） ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+    const daysLeft = t => Math.ceil((t - new Date()) / 86400000);
+
+    const stampSVG = `<svg class="stampmark" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle cx="50" cy="50" r="39" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <text x="50" y="59" text-anchor="middle" font-family="'Shippori Mincho B1',serif"
+            font-size="30" font-weight="600" fill="currentColor">終了</text></svg>`;
+
+    /* ---------- ヘッダー ---------- */
+    let html = "";
+    const daysOld = Math.floor((now0 - new Date(DATA.updated)) / 86400000);
+    if (!next) html += `<div class="stale">全ての日程が過ぎています。次回の情報に更新してください</div>`;
+    else if (daysOld > 120) html += `<div class="stale">最終更新から${daysOld}日経過。公式ページで締切を確認してください</div>`;
+
+    html += `<header>
+      <div class="eyebrow">Personal memo &middot; unofficial</div>
+      <h1>${esc(DATA.title)}</h1>
+      <div class="subtitle"><b>${esc(DATA.event && DATA.event.name)}</b>　${esc(DATA.event && DATA.event.dates)}</div>
+      <div class="meta">
+        <span>会場 <b>${esc(DATA.event && DATA.event.venue)}</b></span>
+        <span>参加費 <b>${esc(DATA.event && DATA.event.fee)}</b></span>
+        <span>データ更新 <b>${esc(DATA.updated)}</b></span>
+      </div>
+      <div class="disclaimer">
+        <b>非公式の個人メモです。</b>コミックマーケット準備会とは関係ありません。
+        日付は手作業で転記したもので、誤りが含まれる可能性があります。
+        申し込む前に必ず<a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">公式サイト</a>で確認してください。
+      </div>
+    </header>`;
+
+    html += `<div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-usual" aria-controls="panel-usual" aria-selected="true">締切一覧</button>
+      <button class="tab" role="tab" id="tab-first" aria-controls="panel-first" aria-selected="false">当選後にやること</button>
+      <button class="tab" role="tab" id="tab-onsite" aria-controls="panel-onsite" aria-selected="false">当日やること</button>
+    </div>`;
+
+    /* ---------- パネル1 ---------- */
+    let u = `<div class="panel" id="panel-usual" role="tabpanel" aria-labelledby="tab-usual">`;
+    if (next) {
+      u += `<section class="hero" id="hero">
+        <span class="tombo tl"></span><span class="tombo tr"></span>
+        <span class="tombo bl"></span><span class="tombo br"></span>
+        <div class="hero-label">Next deadline</div>
+        <div class="hero-name">${esc(next.name)}</div>
+        <div class="hero-when">${fmtFull(next.t)}</div>
+        <div class="count"><span class="count-num" id="cnum">–</span><span class="count-unit" id="cunit">日</span></div>
+        <div class="count-sub" id="csub"></div>
+        ${next.note ? `<div class="hero-note">${esc(next.note)}</div>` : ""}
+      </section>`;
+    } else {
+      u += `<section class="hero">
+        <span class="tombo tl"></span><span class="tombo tr"></span>
+        <span class="tombo bl"></span><span class="tombo br"></span>
+        <div class="hero-label">Next deadline</div>
+        <div class="hero-name">予定なし</div>
+        <div class="hero-when">次回の日程が発表されたら DATA を書き換えてください</div>
+      </section>`;
+    }
+
+    u += `<h2>すべての日程</h2>`;
+
+    const rows = items.map(i => {
+      const past = i.t <= now0, left = daysLeft(i.t), urgent = !past && left <= 3;
+      return `<div class="row ${past?'done':''} ${urgent?'urgent':''}">
+        <div class="row-date"><b>${fmtDate(i.t)}</b>${pad(i.t.getHours())}:${pad(i.t.getMinutes())}</div>
+        <div class="row-body"><div class="row-name">${esc(i.name)}</div>
+          ${i.note?`<div class="row-note">${esc(i.note)}</div>`:""}
+          ${i.src?`<div class="row-src"><a href="${esc(R(i.src))}" target="_blank" rel="noopener">出典を見る</a></div>`:""}</div>
+        ${past ? stampSVG : `<div class="row-left"><b>${left}</b>日</div>`}
+      </div>`;
+    });
+
+    /* 日程が未定の申請も、申込の締切と開催日のあいだに並べる。
+       at が入った時点で上の rows 側に移り、日付順に整列する。 */
+    const pendingRows = ((DATA.after && DATA.after.items) || [])
+      .filter(x => x && !x.at)
+      .map(x => `
+      <div class="row pending-row">
+        <div class="row-date"><b class="undec">未定</b></div>
+        <div class="row-body">
+          <div class="row-name">${esc(x.name)}</div>
+          <div class="row-note">${esc(x.when)}</div>
+          ${(x.check && x.check.url) ? `<div class="row-src">
+            <a href="${esc(R(x.check.url))}" target="_blank" rel="noopener">確認先を見る</a></div>` : ""}
+        </div>
+        <div class="row-left"></div>
+      </div>`);
+
+    if (pendingRows.length) {
+      let at = items.findIndex(i => i.kind === "event");
+      if (at < 0) at = rows.length;
+      rows.splice(at, 0, ...pendingRows);
+    }
+    u += rows.join("");
+
+    const groups = [];
+    (DATA.links || []).forEach(l => {
+      if (!l) return;
+      const g = l.group || "リンク";
+      let x = groups.find(y => y.name === g);
+      if (!x) { x = {name:g, items:[]}; groups.push(x); }
+      x.items.push(l);
+    });
+    groups.forEach(g => {
+      u += `<h2>${esc(g.name)}</h2><ul class="links">`;
+      g.items.forEach(l => {
+        const host = getHost(l.url);
+        const isPin = l.note && String(l.note).startsWith("★");
+        u += `<li${isPin ? ' class="pin"' : ''}>
+          <a href="${esc(R(l.url))}" target="_blank" rel="noopener">${esc(l.name)}</a>
+          ${l.note ? `<div class="row-note">${esc(l.note)}</div>` : ""}
+          ${host ? `<div class="host">${esc(host)}</div>` : ""}</li>`;
+      });
+      u += `</ul>`;
+    });
+
+    u += `<h2>ログインに要るもの</h2><ul class="check">`;
+    (DATA.keys || []).forEach(k => u += `<li>${esc(k)}</li>`);
+    u += `</ul><h2>更新するとき見るところ</h2><ul class="check">`;
+    (DATA.checklist || []).forEach(c => u += `<li>${esc(c)}</li>`);
+    u += `</ul></div>`;
+
+    /* ---------- パネル2 ---------- */
+    const A = DATA.after || {};
+    let f = `<div class="panel" id="panel-first" role="tabpanel" aria-labelledby="tab-first" hidden>`;
+    f += `<p class="lead">${esc(A.intro || "")}</p>`;
+    f += `<h2>申請の一覧</h2><ol class="tasks">`;
+    (A.items || []).forEach(x => {
+      if (!x) return;
+      let badge;
+      if (!x.at) badge = `<span class="badge">日程未定</span>`;
+      else {
+        const t = new Date(x.at), left = daysLeft(t);
+        badge = t <= now0
+          ? `<span class="badge done">終了</span>`
+          : `<span class="badge set">あと${left}日</span>`;
+      }
+      const isWarn = x.note && String(x.note).startsWith("★");
+      const checkUrl = x.check && x.check.url;
+      const checkName = x.check && x.check.name;
+      const pdfUrl = x.pdf && x.pdf.url;
+      const pdfName = x.pdf && x.pdf.name;
+
+      f += `<li>
+        <div class="tk-head"><span class="tk-name">${esc(x.name || "")}</span>${badge}</div>
+        <div class="tk-meta">
+          <span class="tk-k">時期</span><span>${esc(x.when || "")}</span>
+          <span class="tk-k">方法</span><span>${esc(x.how || "")}</span>
+          <span class="tk-k">要るもの</span><span>${(x.need || []).map(n=>esc(n)).join("<br>")}</span>
+        </div>
+        ${x.note ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(x.note)}</div>` : ""}`;
+
+      if (checkUrl || pdfName) {
+        f += `<div class="tk-files">`;
+        if (checkUrl) {
+          f += `<div><span class="lbl">確認先</span>
+            <a href="${esc(R(checkUrl))}" target="_blank" rel="noopener">${esc(checkName || checkUrl)}</a></div>`;
+        }
+        if (pdfName) {
+          f += pdfUrl
+            ? `<div><span class="lbl">PDF</span><a href="${esc(R(pdfUrl))}" target="_blank" rel="noopener">${esc(pdfName)}</a></div>`
+            : `<div><span class="lbl">PDF</span><span class="pending">${esc(pdfName)}｜公開待ち（確認先から辿る）</span></div>`;
+        }
+        f += `</div>`;
+      }
+      f += `</li>`;
+    });
+    f += `</ol>`;
+
+    const RULE = A.urlrule || { pattern: "", rows: [], notes: [] };
+    f += `<h2>公式サイトのURLの規則</h2>
+      <div class="rule-pat">${esc(RULE.pattern || "")}</div>
+      <ul class="links">`;
+    (RULE.rows || []).forEach(r => {
+      f += `<li><code class="rule-k">${esc(r.k || "")}</code>
+        <div class="row-note">${esc(r.v || "")}</div></li>`;
+    });
+    f += `</ul><ul class="check">`;
+    (RULE.notes || []).forEach(n => f += `<li>${esc(n)}</li>`);
+    f += `</ul></div>`;
+
+    /* ---------- パネル3：当日やること ---------- */
+    const O = DATA.onsite || {};
+    let o = `<div class="panel" id="panel-onsite" role="tabpanel" aria-labelledby="tab-onsite" hidden>`;
+    o += `<p class="lead">${esc(O.intro || "")}</p>`;
+
+    o += `<h2>当日の流れ</h2><ol class="tasks">`;
+    (O.flow || []).forEach(x => {
+      if (!x) return;
+      o += `<li><div class="tk-head"><span class="tk-name">${esc(x.t || "")}</span></div>
+        <div class="tk-note">${esc(x.d || "")}</div></li>`;
+    });
+    o += `</ol>`;
+
+    o += `<h2>紙もの</h2><ol class="tasks">`;
+    (O.papers || []).forEach(p => {
+      if (!p) return;
+      const isWarn = p.how && String(p.how).startsWith("★");
+      o += `<li>
+        <div class="tk-head"><span class="tk-name">${esc(p.name || "")}</span>
+          <span class="badge">${esc(p.when || "")}</span></div>
+        ${p.how ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(p.how)}</div>` : ""}
+        <div class="tk-meta"><span class="tk-k">書く欄</span>
+          <span>${(p.fill || []).map(x=>esc(x)).join("<br>")}</span></div>
+        ${p.note ? `<div class="tk-note">${esc(p.note)}</div>` : ""}</li>`;
+    });
+    o += `</ol>`;
+
+    const S = O.submit || { yes: [], no: [], note: "" };
+    o += `<h2>見本誌に出すもの</h2><ul class="check">`;
+    (S.yes || []).forEach(x => o += `<li>${esc(x)}</li>`);
+    o += `</ul><h2>出さないもの</h2><ul class="check none">`;
+    (S.no || []).forEach(x => o += `<li>${esc(x)}</li>`);
+    o += `</ul>${S.note ? `<p class="tk-note" style="margin-top:14px">${esc(S.note)}</p>` : ""}`;
+
+    o += `<h2>持ち物</h2><ul class="check">`;
+    (O.bring || []).forEach(x => o += `<li>${esc(x)}</li>`);
+    o += `</ul></div>`;
+
+    html += u + f + o;
+    html += `<footer>個人用のメモです。コミックマーケット準備会とは関係ありません。
+      正確な情報は必ず<a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">公式サイト</a>で確認してください。</footer>`;
+    app.innerHTML = html;
+
+    /* ---------- タブ ---------- */
+    const tabs = [...document.querySelectorAll('.tab')];
+    function select(id, push){
+      tabs.forEach(t => {
+        const on = t.id === 'tab-' + id;
+        t.setAttribute('aria-selected', on);
+        const p = document.getElementById(t.getAttribute('aria-controls'));
+        if (p) p.hidden = !on;
+      });
+      if (push) history.replaceState(null, '', '#' + id);
+    }
+    tabs.forEach(t => {
+      t.addEventListener('click', () => select(t.id.replace('tab-',''), true));
+      t.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        const i = tabs.indexOf(t);
+        const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        n.focus(); select(n.id.replace('tab-',''), true);
+      });
+    });
+    const h = location.hash.replace('#','');
+    select(['first','onsite'].includes(h) ? h : 'usual', false);
+
+    /* ---------- カウントダウン ---------- */
+    if (next) {
+      const hero = document.getElementById('hero'), num = document.getElementById('cnum');
+      const unit = document.getElementById('cunit'), sub = document.getElementById('csub');
+      const tick = () => {
+        const ms = next.t - new Date();
+        if (ms <= 0) { location.reload(); return; }
+        const d = Math.floor(ms/86400000), h = Math.floor(ms%86400000/3600000);
+        const m = Math.floor(ms%3600000/60000), s = Math.floor(ms%60000/1000);
+        if (num && unit && sub) {
+          if (d >= 1) {
+            num.textContent = d; unit.textContent = "日";
+            sub.textContent = `残り ${pad(h)}:${pad(m)}:${pad(s)}`;
+          } else {
+            num.textContent = h; unit.textContent = "時間";
+            sub.textContent = `${m}分 ${pad(s)}秒`;
+          }
+        }
+        if (hero) hero.classList.toggle('is-urgent', ms < 3*86400000);
+      };
+      tick(); setInterval(tick, 1000);
+    }
+  } catch (err) {
+    console.error("Rendering error:", err);
+    app.innerHTML = `<div class="disclaimer">
+      <b>表示に失敗しました。</b>公式サイトで確認してください：
+      <a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">コミックマーケット公式サイト</a>
+    </div>`;
+  }
+})();
+</script>
+</div>
+</body>
+</html>
