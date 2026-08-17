@@ -88,6 +88,19 @@ h1{font-family:"Shippori Mincho B1",serif;font-weight:600;
 .tab-text-short{display:none}
 .panel[hidden]{display:none}
 
+.toc{margin-top:24px;scroll-margin-top:16px}
+.toc-list{list-style:none;border-top:1px solid var(--rule)}
+.toc-list li{border-bottom:1px solid var(--rule);font-size:14.5px}
+.toc-list a{display:block;padding:10px 0;font-weight:500}
+
+.sec-head{font-family:"Noto Sans JP",sans-serif;font-size:18px;font-weight:700;
+  color:var(--ink);margin:40px 0 16px;padding-bottom:8px;
+  border-bottom:2px solid var(--ink);scroll-margin-top:16px}
+
+.back-to-toc{margin-top:24px;text-align:right;font-size:13px}
+.back-to-toc a{color:var(--muted);border-bottom-color:var(--rule)}
+.back-to-toc a:hover{color:var(--indigo)}
+
 .hero{position:relative;background:var(--card);border:2px solid var(--ink);
   margin:44px 0 18px;padding:30px 26px 26px}
 .hero.is-urgent{border-color:var(--stamp)}
@@ -201,10 +214,13 @@ h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
 footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
   font-size:12px;color:var(--muted)}
 
+@media(min-width:640px){
+  .toc,.sec-head,.back-to-toc{display:none}
+}
+@media(max-width:639px){
+  .tabs{display:none}
+}
 @media(max-width:520px){
-  .tab{padding:10px 4px;font-size:12.5px;flex:1 1 0;text-align:center;line-height:1.3}
-  .tab-text-full{display:none}
-  .tab-text-short{display:inline}
   .row{flex-wrap:wrap;gap:10px}
   .row-date{flex-basis:100%;display:flex;align-items:baseline;gap:8px}
   .row-date b{display:inline}
@@ -713,6 +729,14 @@ const DATA = {
         日付は手作業で転記したもので、誤りが含まれる可能性があります。
         申し込む前に必ず<a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">公式サイト</a>で確認してください。
       </div>
+      <nav class="toc" id="toc" aria-label="目次">
+        <ul class="toc-list">
+          <li><a href="#usual">締切一覧</a></li>
+          <li><a href="#apply">申込みでやること</a></li>
+          <li><a href="#first">当選後にやること</a></li>
+          <li><a href="#onsite">当日やること</a></li>
+        </ul>
+      </nav>
     </header>`;
 
     html += `<div class="tabs" role="tablist">
@@ -724,6 +748,7 @@ const DATA = {
 
     /* ---------- パネル1：締切一覧 ---------- */
     let u = `<div class="panel" id="panel-usual" role="tabpanel" aria-labelledby="tab-usual">`;
+    u += `<h2 class="sec-head" id="usual">締切一覧</h2>`;
     if (next) {
       u += `<section class="hero" id="hero">
         <span class="tombo tl"></span><span class="tombo tr"></span>
@@ -780,11 +805,13 @@ const DATA = {
       rows.splice(at, 0, ...pendingRows);
     }
     u += rows.join("");
+    u += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
     u += `</div>`;
 
     /* ---------- パネル2：申込みでやること ---------- */
     const AP = DATA.apply || {};
     let ap = `<div class="panel" id="panel-apply" role="tabpanel" aria-labelledby="tab-apply" hidden>`;
+    ap += `<h2 class="sec-head" id="apply">申込みでやること</h2>`;
     if (AP.intro) ap += `<p class="lead">${esc(AP.intro)}</p>`;
     ap += renderTasks(AP.items || [], "作業の一覧", { noPendingBadge: true });
     ap += renderLinks("apply");
@@ -792,11 +819,14 @@ const DATA = {
     (DATA.keys || []).forEach(k => ap += `<li>${esc(k)}</li>`);
     ap += `</ul><h2>更新するとき見るところ</h2><ul class="check">`;
     (DATA.checklist || []).forEach(c => ap += `<li>${esc(c)}</li>`);
-    ap += `</ul></div>`;
+    ap += `</ul>`;
+    ap += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
+    ap += `</div>`;
 
     /* ---------- パネル3：当選後にやること ---------- */
     const A = DATA.after || {};
     let f = `<div class="panel" id="panel-first" role="tabpanel" aria-labelledby="tab-first" hidden>`;
+    f += `<h2 class="sec-head" id="first">当選後にやること</h2>`;
     if (A.intro) f += `<p class="lead">${esc(A.intro)}</p>`;
     f += renderTasks(A.items || [], "申請の一覧");
 
@@ -812,11 +842,13 @@ const DATA = {
     (RULE.notes || []).forEach(n => f += `<li>${esc(n)}</li>`);
     f += `</ul>`;
     f += renderLinks("after");
+    f += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
     f += `</div>`;
 
     /* ---------- パネル4：当日やること ---------- */
     const O = DATA.onsite || {};
     let o = `<div class="panel" id="panel-onsite" role="tabpanel" aria-labelledby="tab-onsite" hidden>`;
+    o += `<h2 class="sec-head" id="onsite">当日やること</h2>`;
     if (O.intro) o += `<p class="lead">${esc(O.intro)}</p>`;
 
     o += `<h2>当日の流れ</h2><ol class="tasks">`;
@@ -852,6 +884,7 @@ const DATA = {
     (O.bring || []).forEach(x => o += `<li>${esc(x)}</li>`);
     o += `</ul>`;
     o += renderLinks("onsite");
+    o += `<div class="back-to-toc"><a href="#toc">↑ 目次へ戻る</a></div>`;
     o += `</div>`;
 
     html += u + ap + f + o;
@@ -859,29 +892,110 @@ const DATA = {
       正確な情報は必ず<a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">公式サイト</a>で確認してください。</footer>`;
     app.innerHTML = html;
 
-    /* ---------- タブ ---------- */
+    /* ---------- ナビゲーション（タブ / 一覧モード切り替え） ---------- */
+    const mqDesktop = window.matchMedia("(min-width: 640px)");
+    const tabsContainer = document.querySelector('.tabs');
     const tabs = [...document.querySelectorAll('.tab')];
-    function select(id, push){
-      tabs.forEach(t => {
-        const on = t.id === 'tab-' + id;
-        t.setAttribute('aria-selected', on);
-        const p = document.getElementById(t.getAttribute('aria-controls'));
-        if (p) p.hidden = !on;
-      });
+    const panels = [...document.querySelectorAll('.panel')];
+    const toc = document.getElementById('toc');
+    const validTabs = ['usual', 'apply', 'first', 'onsite'];
+
+    let currentTab = validTabs.includes(location.hash.replace('#', ''))
+      ? location.hash.replace('#', '')
+      : 'usual';
+
+    function setMode() {
+      if (mqDesktop.matches) {
+        /* タブモード（PC・タブレット） */
+        if (tabsContainer) {
+          tabsContainer.setAttribute('role', 'tablist');
+          tabsContainer.hidden = false;
+        }
+        tabs.forEach(t => {
+          const key = t.id.replace('tab-', '');
+          t.setAttribute('role', 'tab');
+          t.setAttribute('aria-controls', 'panel-' + key);
+          t.setAttribute('aria-selected', key === currentTab ? 'true' : 'false');
+        });
+        panels.forEach(p => {
+          const key = p.id.replace('panel-', '');
+          p.setAttribute('role', 'tabpanel');
+          p.setAttribute('aria-labelledby', 'tab-' + key);
+          p.hidden = (key !== currentTab);
+        });
+        if (toc) toc.hidden = true;
+      } else {
+        /* 一覧モード（スマホ） */
+        if (tabsContainer) {
+          tabsContainer.removeAttribute('role');
+          tabsContainer.hidden = true;
+        }
+        tabs.forEach(t => {
+          t.removeAttribute('role');
+          t.removeAttribute('aria-controls');
+          t.removeAttribute('aria-selected');
+        });
+        panels.forEach(p => {
+          p.removeAttribute('role');
+          p.removeAttribute('aria-labelledby');
+          p.hidden = false;
+        });
+        if (toc) toc.hidden = false;
+      }
+    }
+
+    function select(id, push) {
+      if (!validTabs.includes(id)) return;
+      currentTab = id;
+      if (mqDesktop.matches) {
+        tabs.forEach(t => {
+          const on = t.id === 'tab-' + id;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          const p = document.getElementById('panel-' + t.id.replace('tab-', ''));
+          if (p) p.hidden = !on;
+        });
+      }
       if (push) history.replaceState(null, '', '#' + id);
     }
+
     tabs.forEach(t => {
-      t.addEventListener('click', () => select(t.id.replace('tab-',''), true));
+      t.addEventListener('click', () => select(t.id.replace('tab-', ''), true));
       t.addEventListener('keydown', e => {
+        if (!mqDesktop.matches) return;
         if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
         e.preventDefault();
         const i = tabs.indexOf(t);
         const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-        n.focus(); select(n.id.replace('tab-',''), true);
+        n.focus();
+        select(n.id.replace('tab-', ''), true);
       });
     });
-    const h = location.hash.replace('#','');
-    select(['apply','first','onsite'].includes(h) ? h : 'usual', false);
+
+    mqDesktop.addEventListener('change', () => {
+      const h = location.hash.replace('#', '');
+      if (validTabs.includes(h)) currentTab = h;
+      setMode();
+    });
+
+    window.addEventListener('hashchange', () => {
+      const h = location.hash.replace('#', '');
+      if (validTabs.includes(h)) {
+        currentTab = h;
+        if (mqDesktop.matches) {
+          select(h, false);
+        }
+      }
+    });
+
+    /* 初期状態の適用 */
+    setMode();
+    if (!mqDesktop.matches) {
+      const initHash = location.hash.replace('#', '');
+      if (validTabs.includes(initHash)) {
+        const el = document.getElementById(initHash);
+        if (el) el.scrollIntoView();
+      }
+    }
 
     /* ---------- カウントダウン ---------- */
     if (next) {
