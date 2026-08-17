@@ -23,7 +23,7 @@
   各項目の pdf: の url を書き換えます。空のままだと「公開待ち」と表示。
   PDFのURLは回ごとに変わりますが、check（確認先）は変わりません。
 
-  タブは URL で切り替わります → #usual / #first / #onsite
+  タブは URL で切り替わります → #usual / #apply / #first / #onsite
 ==================================================================
 -->
 <html lang="ja">
@@ -85,6 +85,7 @@ h1{font-family:"Shippori Mincho B1",serif;font-weight:600;
   display:inline-flex;align-items:center;justify-content:center}
 .tab[aria-selected="true"]{color:var(--ink);font-weight:700;background:var(--card);
   border-color:var(--ink);border-bottom:2px solid var(--card)}
+.tab-text-short{display:none}
 .panel[hidden]{display:none}
 
 .hero{position:relative;background:var(--card);border:2px solid var(--ink);
@@ -202,6 +203,8 @@ footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);
 
 @media(max-width:520px){
   .tab{padding:10px 4px;font-size:12.5px;flex:1 1 0;text-align:center;line-height:1.3}
+  .tab-text-full{display:none}
+  .tab-text-short{display:inline}
   .row{flex-wrap:wrap;gap:10px}
   .row-date{flex-basis:100%;display:flex;align-items:baseline;gap:8px}
   .row-date b{display:inline}
@@ -254,51 +257,118 @@ const DATA = {
       src:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" }
   ],
 
+  apply: {
+
+    intro: "申込には郵送とオンラインの2通りがあり、締切が別です。どちらもサークル参加申込書セットを読んでから始めます。締切そのものは「締切一覧」タブにあります。",
+
+    items: [
+
+      { name:"サークル参加申込書セットを読む",
+        when:"申込を始める前",
+        at:null,
+        how:"公式サイトのPDFを読む（オンライン申込でも必読）",
+        need:["特になし（PDFは無料で公開されている）"],
+        note:"★オンライン申込でも読む必要がある。郵送申込用の冊子版には、この内容に加えてジャンルコード一覧が折り込まれている。",
+        check:{ name:"日程と申込書セットのご案内", url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html" },
+        pdf:{ name:"サークル参加申込書セット（PDF）", url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.pdf" } },
+
+      { name:"申し込む日を決める（ジャンル選び）",
+        when:"申込内容を作る前",
+        at:null,
+        how:"ジャンルコード一覧から選ぶ",
+        need:["頒布物の内容"],
+        note:"申し込む日はジャンルで決まる。ジャンルコード一覧のURLは開催回ごとに変わる。",
+        check:{ name:"ジャンルコード一覧", url:"https://www.comiket.co.jp/info-c/C{n}/C{n}genre.html" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"オンライン申込（決済 → 内容の確定）",
+        when:"決済締切まで、そのあと申込締切まで",
+        at:null,
+        how:"Circle.ms ポータルからログインして申し込む",
+        need:["Circle.msのアカウント（メールアドレスとパスワード）","サークルカット"],
+        note:"★締切が2段階ある。決済締切を過ぎると新規申込ができなくなり、その後の申込締切は決済済みの申込内容を確定させる期限。サークルカットのアップロード手順は操作ガイドにある。",
+        check:{ name:"オンライン申込のやり方", url:"https://docs.circle.ms/howto/10.html" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"郵送申込（冊子版の購入 → 記入 → 投函）",
+        when:"申込期間内（消印有効）",
+        at:null,
+        how:"申込書セット冊子版を購入し、記入して郵送する",
+        need:["申込書セット冊子版（有料）","申込用の封筒"],
+        note:"冊子版の購入が必要なので、締切から逆算して早めに用意する。払込金受領証に申込書番号が記載されるので、Webカタログとのひも付けまで捨てない。",
+        check:{ name:"申込書セット冊子版・封筒の通販", url:"https://shop.circle.ms/CShopping/List" },
+        pdf:{ name:"", url:"" } },
+
+      { name:"郵送申込のひも付け（郵送で申し込んだ場合のみ）",
+        when:"申込のあと",
+        at:null,
+        how:"Circle.msのアカウントと郵送申込を結び付ける",
+        need:["受付番号","電話番号","生年月日","申込書番号（払込金受領証に記載）"],
+        note:"これをしないと、当落確認やWebカタログの編集がWeb側からできない。オンライン申込の場合は不要。",
+        check:{ name:"郵送申込のひも付け方法", url:"https://docs.circle.ms/webcatalog/ctn/creator/001.html" },
+        pdf:{ name:"", url:"" } }
+    ]
+  },
+
   links: [
     { group:"作業する画面", name:"Circle.ms ポータル",
       url:"https://portal.circle.ms/",
-      note:"ログインの入口。オンライン申込はここから" },
+      note:"ログインの入口。オンライン申込はここから",
+      tab:"apply" },
     { group:"作業する画面", name:"Webカタログ サークル側（サークル情報登録＆当落検索）",
       url:"https://succession.circle.ms/",
-      note:"★当落確認とWebカタログ編集は同じここ。時期で機能が切り替わる" },
+      note:"★当落確認とWebカタログ編集は同じここ。時期で機能が切り替わる",
+      tab:"after" },
     { group:"作業する画面", name:"コミケWebカタログ（一般側）",
       url:"https://webcatalog.circle.ms/",
-      note:"自分のサークルページの見え方を確認する用" },
+      note:"自分のサークルページの見え方を確認する用",
+      tab:"after" },
     { group:"作業する画面", name:"申込書セット冊子版・封筒の通販",
       url:"https://shop.circle.ms/CShopping/List",
-      note:"郵送申込のときだけ必要" },
+      note:"郵送申込のときだけ必要",
+      tab:"apply" },
 
     { group:"公式の案内", name:"申込サークルサポートページ",
       url:"https://www.comiket.co.jp/info-c/index.html",
-      note:"★回ごとの手引きやPDFはここから辿れる。URLが変わらない起点" },
+      note:"★回ごとの手引きやPDFはここから辿れる。URLが変わらない起点",
+      tab:["after","onsite"] },
     { group:"公式の案内", name:"日程と申込書セットのご案内",
       url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.html",
-      note:"締切の一次情報はここ" },
+      note:"締切の一次情報はここ",
+      tab:"apply" },
     { group:"公式の案内", name:"サークル参加申込書セット（PDF）",
       url:"https://www.comiket.co.jp/info-c/C{n}/C{n}Appset.pdf",
-      note:"オンライン申込でも必読" },
+      note:"オンライン申込でも必読",
+      tab:["apply","onsite"] },
     { group:"公式の案内", name:"ジャンルコード一覧",
       url:"https://www.comiket.co.jp/info-c/C{n}/C{n}genre.html",
-      note:"申し込む日はジャンルで決まる" },
+      note:"申し込む日はジャンルで決まる",
+      tab:"apply" },
     { group:"公式の案内", name:"オンライン申込サポートページ",
       url:"https://www.comiket.co.jp/info-c/e_application/e_application.html",
-      note:"申込方法の変更点が載る" },
+      note:"申込方法の変更点が載る",
+      tab:"apply" },
     { group:"公式の案内", name:"Webカタログ サークル側について",
       url:"https://www.comiket.co.jp/cdbms/",
-      note:"編集できる期間のスケジュール表がある" },
+      note:"編集できる期間のスケジュール表がある",
+      tab:"after" },
 
     { group:"操作ガイド", name:"オンライン申込のやり方",
       url:"https://docs.circle.ms/howto/10.html",
-      note:"サークルカットのアップロード手順もここ" },
+      note:"サークルカットのアップロード手順もここ",
+      tab:"apply" },
     { group:"操作ガイド", name:"Web申込の詳細・諸注意",
       url:"https://docs.circle.ms/howto/50.html",
-      note:"公式が併読を指定しているページ" },
+      note:"公式が併読を指定しているページ",
+      tab:"apply" },
     { group:"操作ガイド", name:"Webカタログ サークル側の使い方",
       url:"https://docs.circle.ms/webcatalog/ctn/creator/",
-      note:"情報の編集画面までの辿り方" },
+      note:"情報の編集画面までの辿り方",
+      tab:"after" },
     { group:"操作ガイド", name:"郵送申込のひも付け方法",
       url:"https://docs.circle.ms/webcatalog/ctn/creator/001.html",
-      note:"郵送で申し込んだ場合のみ必要" }
+      note:"郵送で申し込んだ場合のみ必要",
+      tab:"after" }
   ],
 
   keys: [
@@ -546,6 +616,84 @@ const DATA = {
       <text x="50" y="59" text-anchor="middle" font-family="'Shippori Mincho B1',serif"
             font-size="30" font-weight="600" fill="currentColor">終了</text></svg>`;
 
+    const renderLinks = targetTab => {
+      const groups = [];
+      (DATA.links || []).forEach(l => {
+        if (!l) return;
+        const tabs = Array.isArray(l.tab) ? l.tab : [l.tab || "apply"];
+        if (!tabs.includes(targetTab)) return;
+        const g = l.group || "リンク";
+        let x = groups.find(y => y.name === g);
+        if (!x) { x = { name: g, items: [] }; groups.push(x); }
+        x.items.push(l);
+      });
+      let res = "";
+      groups.forEach(g => {
+        if (!g.items.length) return;
+        res += `<h2>${esc(g.name)}</h2><ul class="links">`;
+        g.items.forEach(l => {
+          const host = getHost(l.url);
+          const isPin = l.note && String(l.note).startsWith("★");
+          res += `<li${isPin ? ' class="pin"' : ''}>
+            <a href="${esc(R(l.url))}" target="_blank" rel="noopener">${esc(l.name)}</a>
+            ${l.note ? `<div class="row-note">${esc(l.note)}</div>` : ""}
+            ${host ? `<div class="host">${esc(host)}</div>` : ""}</li>`;
+        });
+        res += `</ul>`;
+      });
+      return res;
+    };
+
+    /* opts.noPendingBadge: 締切が別の場所（締切一覧）にある工程で「日程未定」を出さない */
+    const renderTasks = (items, h2Title, opts) => {
+      const noPending = !!(opts && opts.noPendingBadge);
+      let res = "";
+      if (h2Title) res += `<h2>${esc(h2Title)}</h2>`;
+      res += `<ol class="tasks">`;
+      (items || []).forEach(x => {
+        if (!x) return;
+        let badge;
+        if (!x.at) badge = noPending ? "" : `<span class="badge">日程未定</span>`;
+        else {
+          const t = new Date(x.at), left = daysLeft(t);
+          badge = t <= now0
+            ? `<span class="badge done">終了</span>`
+            : `<span class="badge set">あと${left}日</span>`;
+        }
+        const isWarn = x.note && String(x.note).startsWith("★");
+        const checkUrl = x.check && x.check.url;
+        const checkName = x.check && x.check.name;
+        const pdfUrl = x.pdf && x.pdf.url;
+        const pdfName = x.pdf && x.pdf.name;
+
+        res += `<li>
+          <div class="tk-head"><span class="tk-name">${esc(x.name || "")}</span>${badge}</div>
+          <div class="tk-meta">
+            <span class="tk-k">時期</span><span>${esc(x.when || "")}</span>
+            <span class="tk-k">方法</span><span>${esc(x.how || "")}</span>
+            <span class="tk-k">要るもの</span><span>${(x.need || []).map(n=>esc(n)).join("<br>")}</span>
+          </div>
+          ${x.note ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(x.note)}</div>` : ""}`;
+
+        if (checkUrl || pdfName) {
+          res += `<div class="tk-files">`;
+          if (checkUrl) {
+            res += `<div><span class="lbl">確認先</span>
+              <a href="${esc(R(checkUrl))}" target="_blank" rel="noopener">${esc(checkName || checkUrl)}</a></div>`;
+          }
+          if (pdfName) {
+            res += pdfUrl
+              ? `<div><span class="lbl">PDF</span><a href="${esc(R(pdfUrl))}" target="_blank" rel="noopener">${esc(pdfName)}</a></div>`
+              : `<div><span class="lbl">PDF</span><span class="pending">${esc(pdfName)}｜公開待ち（確認先から辿る）</span></div>`;
+          }
+          res += `</div>`;
+        }
+        res += `</li>`;
+      });
+      res += `</ol>`;
+      return res;
+    };
+
     /* ---------- ヘッダー ---------- */
     let html = "";
     const daysOld = Math.floor((now0 - new Date(DATA.updated)) / 86400000);
@@ -568,12 +716,13 @@ const DATA = {
     </header>`;
 
     html += `<div class="tabs" role="tablist">
-      <button class="tab" role="tab" id="tab-usual" aria-controls="panel-usual" aria-selected="true">締切一覧</button>
-      <button class="tab" role="tab" id="tab-first" aria-controls="panel-first" aria-selected="false">当選後にやること</button>
-      <button class="tab" role="tab" id="tab-onsite" aria-controls="panel-onsite" aria-selected="false">当日やること</button>
+      <button class="tab" role="tab" id="tab-usual" aria-controls="panel-usual" aria-selected="true"><span class="tab-text-full">締切一覧</span><span class="tab-text-short">締切一覧</span></button>
+      <button class="tab" role="tab" id="tab-apply" aria-controls="panel-apply" aria-selected="false" aria-label="申込みでやること"><span class="tab-text-full">申込みでやること</span><span class="tab-text-short">申込み</span></button>
+      <button class="tab" role="tab" id="tab-first" aria-controls="panel-first" aria-selected="false" aria-label="当選後にやること"><span class="tab-text-full">当選後にやること</span><span class="tab-text-short">当選後</span></button>
+      <button class="tab" role="tab" id="tab-onsite" aria-controls="panel-onsite" aria-selected="false" aria-label="当日やること"><span class="tab-text-full">当日やること</span><span class="tab-text-short">当日</span></button>
     </div>`;
 
-    /* ---------- パネル1 ---------- */
+    /* ---------- パネル1：締切一覧 ---------- */
     let u = `<div class="panel" id="panel-usual" role="tabpanel" aria-labelledby="tab-usual">`;
     if (next) {
       u += `<section class="hero" id="hero">
@@ -631,80 +780,25 @@ const DATA = {
       rows.splice(at, 0, ...pendingRows);
     }
     u += rows.join("");
+    u += `</div>`;
 
-    const groups = [];
-    (DATA.links || []).forEach(l => {
-      if (!l) return;
-      const g = l.group || "リンク";
-      let x = groups.find(y => y.name === g);
-      if (!x) { x = {name:g, items:[]}; groups.push(x); }
-      x.items.push(l);
-    });
-    groups.forEach(g => {
-      u += `<h2>${esc(g.name)}</h2><ul class="links">`;
-      g.items.forEach(l => {
-        const host = getHost(l.url);
-        const isPin = l.note && String(l.note).startsWith("★");
-        u += `<li${isPin ? ' class="pin"' : ''}>
-          <a href="${esc(R(l.url))}" target="_blank" rel="noopener">${esc(l.name)}</a>
-          ${l.note ? `<div class="row-note">${esc(l.note)}</div>` : ""}
-          ${host ? `<div class="host">${esc(host)}</div>` : ""}</li>`;
-      });
-      u += `</ul>`;
-    });
+    /* ---------- パネル2：申込みでやること ---------- */
+    const AP = DATA.apply || {};
+    let ap = `<div class="panel" id="panel-apply" role="tabpanel" aria-labelledby="tab-apply" hidden>`;
+    if (AP.intro) ap += `<p class="lead">${esc(AP.intro)}</p>`;
+    ap += renderTasks(AP.items || [], "作業の一覧", { noPendingBadge: true });
+    ap += renderLinks("apply");
+    ap += `<h2>ログインに要るもの</h2><ul class="check">`;
+    (DATA.keys || []).forEach(k => ap += `<li>${esc(k)}</li>`);
+    ap += `</ul><h2>更新するとき見るところ</h2><ul class="check">`;
+    (DATA.checklist || []).forEach(c => ap += `<li>${esc(c)}</li>`);
+    ap += `</ul></div>`;
 
-    u += `<h2>ログインに要るもの</h2><ul class="check">`;
-    (DATA.keys || []).forEach(k => u += `<li>${esc(k)}</li>`);
-    u += `</ul><h2>更新するとき見るところ</h2><ul class="check">`;
-    (DATA.checklist || []).forEach(c => u += `<li>${esc(c)}</li>`);
-    u += `</ul></div>`;
-
-    /* ---------- パネル2 ---------- */
+    /* ---------- パネル3：当選後にやること ---------- */
     const A = DATA.after || {};
     let f = `<div class="panel" id="panel-first" role="tabpanel" aria-labelledby="tab-first" hidden>`;
-    f += `<p class="lead">${esc(A.intro || "")}</p>`;
-    f += `<h2>申請の一覧</h2><ol class="tasks">`;
-    (A.items || []).forEach(x => {
-      if (!x) return;
-      let badge;
-      if (!x.at) badge = `<span class="badge">日程未定</span>`;
-      else {
-        const t = new Date(x.at), left = daysLeft(t);
-        badge = t <= now0
-          ? `<span class="badge done">終了</span>`
-          : `<span class="badge set">あと${left}日</span>`;
-      }
-      const isWarn = x.note && String(x.note).startsWith("★");
-      const checkUrl = x.check && x.check.url;
-      const checkName = x.check && x.check.name;
-      const pdfUrl = x.pdf && x.pdf.url;
-      const pdfName = x.pdf && x.pdf.name;
-
-      f += `<li>
-        <div class="tk-head"><span class="tk-name">${esc(x.name || "")}</span>${badge}</div>
-        <div class="tk-meta">
-          <span class="tk-k">時期</span><span>${esc(x.when || "")}</span>
-          <span class="tk-k">方法</span><span>${esc(x.how || "")}</span>
-          <span class="tk-k">要るもの</span><span>${(x.need || []).map(n=>esc(n)).join("<br>")}</span>
-        </div>
-        ${x.note ? `<div class="tk-note${isWarn ? ' is-warn' : ''}">${esc(x.note)}</div>` : ""}`;
-
-      if (checkUrl || pdfName) {
-        f += `<div class="tk-files">`;
-        if (checkUrl) {
-          f += `<div><span class="lbl">確認先</span>
-            <a href="${esc(R(checkUrl))}" target="_blank" rel="noopener">${esc(checkName || checkUrl)}</a></div>`;
-        }
-        if (pdfName) {
-          f += pdfUrl
-            ? `<div><span class="lbl">PDF</span><a href="${esc(R(pdfUrl))}" target="_blank" rel="noopener">${esc(pdfName)}</a></div>`
-            : `<div><span class="lbl">PDF</span><span class="pending">${esc(pdfName)}｜公開待ち（確認先から辿る）</span></div>`;
-        }
-        f += `</div>`;
-      }
-      f += `</li>`;
-    });
-    f += `</ol>`;
+    if (A.intro) f += `<p class="lead">${esc(A.intro)}</p>`;
+    f += renderTasks(A.items || [], "申請の一覧");
 
     const RULE = A.urlrule || { pattern: "", rows: [], notes: [] };
     f += `<h2>公式サイトのURLの規則</h2>
@@ -716,12 +810,14 @@ const DATA = {
     });
     f += `</ul><ul class="check">`;
     (RULE.notes || []).forEach(n => f += `<li>${esc(n)}</li>`);
-    f += `</ul></div>`;
+    f += `</ul>`;
+    f += renderLinks("after");
+    f += `</div>`;
 
-    /* ---------- パネル3：当日やること ---------- */
+    /* ---------- パネル4：当日やること ---------- */
     const O = DATA.onsite || {};
     let o = `<div class="panel" id="panel-onsite" role="tabpanel" aria-labelledby="tab-onsite" hidden>`;
-    o += `<p class="lead">${esc(O.intro || "")}</p>`;
+    if (O.intro) o += `<p class="lead">${esc(O.intro)}</p>`;
 
     o += `<h2>当日の流れ</h2><ol class="tasks">`;
     (O.flow || []).forEach(x => {
@@ -754,9 +850,11 @@ const DATA = {
 
     o += `<h2>持ち物</h2><ul class="check">`;
     (O.bring || []).forEach(x => o += `<li>${esc(x)}</li>`);
-    o += `</ul></div>`;
+    o += `</ul>`;
+    o += renderLinks("onsite");
+    o += `</div>`;
 
-    html += u + f + o;
+    html += u + ap + f + o;
     html += `<footer>個人用のメモです。コミックマーケット準備会とは関係ありません。
       正確な情報は必ず<a href="https://www.comiket.co.jp/" target="_blank" rel="noopener">公式サイト</a>で確認してください。</footer>`;
     app.innerHTML = html;
@@ -783,7 +881,7 @@ const DATA = {
       });
     });
     const h = location.hash.replace('#','');
-    select(['first','onsite'].includes(h) ? h : 'usual', false);
+    select(['apply','first','onsite'].includes(h) ? h : 'usual', false);
 
     /* ---------- カウントダウン ---------- */
     if (next) {
