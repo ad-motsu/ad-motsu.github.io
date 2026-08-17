@@ -15,8 +15,8 @@
 ├── favicon.svg                ファビコン
 ├── .nojekyll                  GitHub PagesでのJekyll処理無効化
 ├── README.md                  本ファイル
-├── comiket/
-│   └── index.html             コミケ サークル参加メモ
+├── circle-ops/
+│   └── index.html             Circle Ops Tracker（コミケ参加メモ）
 └── tools/
     ├── check.py               公式サイトから日付候補を抽出するツール
     ├── PROMPT.md              コミケページの更新手順・プロンプト
@@ -60,7 +60,7 @@ const PAGES = [
 
 ## 各ページの更新手順
 
-- **コミケ サークル参加メモ (`comiket/`) の更新**:
+- **Circle Ops Tracker (`circle-ops/`) の更新**:
   `tools/PROMPT.md` に記載の手順に従って更新作業を実施してください。
   `python3 tools/check.py <回数> --year <年>` で公式サイトから情報を取得し、差分を適用します。
 

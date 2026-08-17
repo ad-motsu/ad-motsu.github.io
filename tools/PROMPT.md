@@ -22,7 +22,7 @@ python3 tools/check.py 110 --year 2027
 以下をそのまま貼ります。
 
 ```
-tools/out/ 以下のテキストと C110_report.json を読んで、comiket/index.html の DATA を
+tools/out/ 以下のテキストと C110_report.json を読んで、circle-ops/index.html の DATA を
 更新する差分を作ってください。
 
 【やること】
