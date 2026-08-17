@@ -103,6 +103,9 @@ h1{
   margin:8px 0 4px;
   color:var(--ink);
 }
+/* タイトルはこのページの先頭(締切一覧・ハッシュなし)へ戻る導線 */
+h1 a.home{color:inherit;text-decoration:none;border-bottom:none}
+h1 a.home:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .subtitle-main{
   font-family:"Noto Sans JP",sans-serif;
   font-weight:700;
@@ -1038,13 +1041,12 @@ const DATA = {
     else if (daysOld > 120) html += `<div class="stale">最終更新から${daysOld}日経過。公式ページで締切を確認してください</div>`;
 
     html += `<header>
-      <h1>${esc(DATA.title)}</h1>
+      <h1><a class="home" href="./" id="home-link">${esc(DATA.title)}</a></h1>
       <div class="subtitle-main">コミケ参加・手続き進行表</div>
       <div class="subtitle"><b>${esc(DATA.event && DATA.event.name)}</b>　${esc(DATA.event && DATA.event.dates)}</div>
       <div class="meta">
         <span>会場 <b>${esc(DATA.event && DATA.event.venue)}</b></span>
         <span>参加費 <b>${esc(DATA.event && DATA.event.fee)}</b></span>
-        <span>公式と突き合わせた日 <b>${esc(DATA.updated)}</b></span>
       </div>
       <div class="disclaimer">
         <b>非公式の個人メモです。</b> コミックマーケット準備会とは関係ありません。
@@ -1279,6 +1281,21 @@ const DATA = {
         });
       }
       if (push) history.replaceState(null, '', '#' + id);
+    }
+
+    /* タイトルを押したら、ハッシュを消して先頭(締切一覧)へ戻す。
+       タブを押すとハッシュが付き、素のURLへ戻る導線が無くなるため。
+       一覧モード(スマホ)ではページ先頭へスクロールする。 */
+    const homeLink = document.getElementById('home-link');
+    if (homeLink) {
+      homeLink.addEventListener('click', e => {
+        e.preventDefault();
+        /* file:// や data: では replaceState が SecurityError を投げる。
+           URLの書き換えに失敗してもタブの切り替えは続ける。 */
+        try { history.replaceState(null, '', location.pathname); } catch (_) {}
+        if (mqDesktop.matches) select('usual', false);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      });
     }
 
     tabs.forEach(t => {
