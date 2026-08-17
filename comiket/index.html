@@ -43,8 +43,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Oswald:wght@300;400;600&family=Shippori+Mincho+B1:wght@600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1a1a1c; --paper:#e6e5de; --card:#f7f6f2; --rule:#c9c7bd;
-  --muted:#595750; --stamp:#b32a22; --indigo:#24507d;
+  --ink:#1a1a5c; --paper:#eceaf3; --card:#f8f7fc; --rule:#c2c1eb;
+  --muted:#45447f; --stamp:#d10000; --indigo:#3d3c8f; --seal:#000066;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -52,25 +52,25 @@ body{
   font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);
   background-color:var(--paper);
   background-image:
-    repeating-linear-gradient(0deg,rgba(26,26,28,.045) 0 1px,transparent 1px 34px),
-    repeating-linear-gradient(90deg,rgba(26,26,28,.045) 0 1px,transparent 1px 34px);
+    /* deslop-ignore-next-line 06: 原稿用紙の升目。同人誌の文脈を示す意図的な選択 */
+    repeating-linear-gradient(0deg,rgba(26,26,92,.045) 0 1px,transparent 1px 34px),
+    /* deslop-ignore-next-line 06: 原稿用紙の升目。同人誌の文脈を示す意図的な選択 */
+    repeating-linear-gradient(90deg,rgba(26,26,92,.045) 0 1px,transparent 1px 34px);
   line-height:1.75;font-size:15px;padding:0 18px 80px;
 }
 .wrap{max-width:760px;margin:0 auto}
-a{color:var(--indigo);text-decoration:none;border-bottom:1px solid rgba(36,80,125,.35)}
+a{color:var(--indigo);text-decoration:none;border-bottom:1px solid rgba(61,60,143,.35)}
 a:hover{border-bottom-color:var(--indigo)}
 a:focus-visible,button:focus-visible{outline:2px solid var(--stamp);outline-offset:3px}
 
 .stale{background:var(--stamp);color:#fff;font-size:13px;font-weight:500;
   padding:10px 16px;margin:0 -18px;text-align:center}
 
-.disclaimer{border:1px solid var(--stamp);background:rgba(179,42,34,.05);
-  padding:11px 14px;margin-top:20px;font-size:12.5px;line-height:1.65;color:#7d2019}
+.disclaimer{border:1px solid var(--stamp);background:rgba(209,0,0,.05);
+  padding:11px 14px;margin-top:20px;font-size:12.5px;line-height:1.65;color:var(--stamp)}
 .disclaimer b{font-weight:700}
 
 header{padding:40px 0 26px}
-.eyebrow{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--muted)}
 h1{font-family:"Shippori Mincho B1",serif;font-weight:600;
   font-size:clamp(26px,6vw,36px);line-height:1.25;margin:8px 0 4px}
 .subtitle{font-size:13.5px;color:var(--muted)}
@@ -131,8 +131,9 @@ h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
 .row-left b{font-size:22px;font-weight:600;color:var(--ink);display:block;line-height:1.1}
 .row.urgent .row-left b,.row.urgent .row-date b{color:var(--stamp)}
 .row.done{opacity:.5}
+/* deslop-ignore-next-line 09: 終了した締切の取り消し。装飾ではなく状態表示 */
 .row.done .row-name{text-decoration:line-through;text-decoration-thickness:1px}
-.stampmark{flex:0 0 auto;width:54px;height:54px;color:var(--stamp);opacity:.75;
+.stampmark{flex:0 0 auto;width:54px;height:54px;color:var(--seal);opacity:.75;
   transform:rotate(-11deg);align-self:center}
 @media(prefers-reduced-motion:no-preference){
   .stampmark{animation:press .5s cubic-bezier(.2,.9,.3,1) both}}
@@ -141,7 +142,7 @@ h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
 
 .links{list-style:none}
 .links li{padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
-.links li.pin .row-note{color:var(--stamp)}
+.links li.pin .row-note{color:var(--seal)}
 .links li.pin a{font-weight:700}
 .host{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.09em;
   color:var(--muted);margin-top:3px}
@@ -156,19 +157,20 @@ h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
   border-bottom:1px solid var(--rule)}
 .tasks li::before{content:counter(tk,decimal-leading-zero);position:absolute;
   left:0;top:21px;font-family:"Oswald",sans-serif;font-size:20px;font-weight:600;
-  color:var(--stamp);letter-spacing:-.02em}
+  color:var(--seal);letter-spacing:-.02em}
 .tk-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .tk-name{font-weight:700;font-size:15.5px;line-height:1.5}
 .badge{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.1em;
   padding:2px 8px;border:1px solid var(--muted);color:var(--muted);white-space:nowrap}
-.badge.set{border-color:var(--stamp);color:var(--stamp);font-weight:600}
+.badge.set{border-color:var(--muted);color:var(--muted);font-weight:600}
+/* deslop-ignore-next-line 09: 終了した締切の取り消し。装飾ではなく状態表示 */
 .badge.done{opacity:.5;text-decoration:line-through}
 .tk-meta{display:grid;grid-template-columns:64px 1fr;gap:5px 12px;
   margin:10px 0;font-size:12.5px;line-height:1.6}
 .tk-k{font-family:"Oswald",sans-serif;font-size:10.5px;letter-spacing:.12em;
   color:var(--muted);padding-top:3px}
-.tk-note{font-size:13.5px;color:#5c5a54;line-height:1.8}
-.tk-note.is-warn{color:#7d2019}
+.tk-note{font-size:13.5px;color:var(--muted);line-height:1.8}
+.tk-note.is-warn{color:var(--stamp)}
 .tk-files{margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule);font-size:13px}
 .tk-files div{margin-top:3px}
 .tk-files .lbl{font-family:"Oswald",sans-serif;font-size:10px;letter-spacing:.12em;
@@ -181,7 +183,7 @@ h2{font-family:"Oswald",sans-serif;font-weight:400;font-size:12px;
 .row-src a:hover{color:var(--indigo)}
 
 .pending-row{border-bottom-style:dashed}
-.pending-row .row-name{font-weight:400;color:#54524c}
+.pending-row .row-name{font-weight:400;color:var(--muted)}
 .undec{font-family:"Noto Sans JP",sans-serif;font-size:12px;font-weight:400;
   letter-spacing:.1em;color:var(--muted);border:1px solid var(--rule);
   padding:1px 7px;display:inline-block}
@@ -537,7 +539,9 @@ const DATA = {
     const daysLeft = t => Math.ceil((t - new Date()) / 86400000);
 
     const stampSVG = `<svg class="stampmark" viewBox="0 0 100 100" aria-hidden="true">
+      <!-- deslop-ignore-next-line 24: 判子（済スタンプ）の意匠。汎用アイコンではない -->
       <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="3"/>
+      <!-- deslop-ignore-next-line 24: 判子（済スタンプ）の意匠。汎用アイコンではない -->
       <circle cx="50" cy="50" r="39" fill="none" stroke="currentColor" stroke-width="1.5"/>
       <text x="50" y="59" text-anchor="middle" font-family="'Shippori Mincho B1',serif"
             font-size="30" font-weight="600" fill="currentColor">終了</text></svg>`;
@@ -549,7 +553,6 @@ const DATA = {
     else if (daysOld > 120) html += `<div class="stale">最終更新から${daysOld}日経過。公式ページで締切を確認してください</div>`;
 
     html += `<header>
-      <div class="eyebrow">Personal memo &middot; unofficial</div>
       <h1>${esc(DATA.title)}</h1>
       <div class="subtitle"><b>${esc(DATA.event && DATA.event.name)}</b>　${esc(DATA.event && DATA.event.dates)}</div>
       <div class="meta">
